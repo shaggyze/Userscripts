@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Last Post - MAL
 // @namespace   Last_Post
-// @version     0.2
+// @version     0.3
 // @description Add Last Post link to MAL Forum Topics.
 // @author      ShaggyZE & hacker09
 // @include      *://myanimelist.net/forum/?topicid=*
@@ -11,8 +11,10 @@
 
 (function() {
   'use strict';
+var href = location.href;
+href = href.replace(/\#.*/,'');
   if (location.href.match(/msg/) == null) {
-    document.querySelector("div.mt4.mb4.pl0.pb0.pt4.pb4").insertAdjacentHTML('beforeEnd', `<a style="cursor: pointer;float: right;" href="` + location.href + `&goto=lastpost">Last Post »»</a>`); //Add the Last Post link before first post of current page.
+    document.querySelector("div.mt4.mb4.pl0.pb0.pt4.pb4").insertAdjacentHTML('beforeEnd', `<a style="cursor: pointer;float: right;" href="` + href + `&goto=lastpost">Last Post »»</a>`); //Add the Last Post link before first post of current page.
   } else {
     document.querySelector("div.mt4.mb4.pl0.pb0.pt4.pb4").insertAdjacentHTML('beforeEnd', `<a style="cursor: pointer;float: right;" onclick='[...document.querySelectorAll("div.forum-topic-message-wrapper")].pop().scrollIntoView()'>Last Post »»</a>`); //Add the Last Post link before first post of current page.
   }
