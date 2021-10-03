@@ -1,15 +1,17 @@
 // ==UserScript==
 // @name        MyAnimeList (MAL) Tags Updater
+// @namespace   https://greasyfork.org/users/198611
 // @namespace   https://greasyfork.org/users/7517
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
-// @icon        http://i.imgur.com/b7Fw8oH.png
-// @version     6.1.4
+// @icon        https://www.google.com/s2/favicons?domain=myanimelist.net
+// @version     6.1.5
 // @author      shaggyze and akarin
 // @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
 // @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
 // @include     /^https?:\/\/myanimelist\.net\/editlist\.php\?type=anime/
 // @include     /^https?:\/\/myanimelist\.net\/ownlist\/(anime|manga)\//
-// @grant       none
+// @grant        GM_getValue
+// @grant        GM_setValue
 // ==/UserScript==
 
 (function ($) {
@@ -209,7 +211,7 @@
 
     loadValue (key, value) {
       try {
-        return JSON.parse(localStorage.getItem(this.encodeKey(key))) || value;
+        return JSON.parse(GM_getValue(this.encodeKey(key))) || value;
       } catch (e) {
         console.log(e.name + ': ' + e.message);
         return value;
@@ -217,7 +219,7 @@
     }
 
     saveValue (key, value) {
-      localStorage.setItem(this.encodeKey(key), JSON.stringify(value));
+      GM_setValue(this.encodeKey(key), JSON.stringify(value));
     }
   }
 
