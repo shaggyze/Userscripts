@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name        MyAnimeList (MAL) Tags Updater
-// @namespace   https://greasyfork.org/users/198611
+// @namespace   https://github.com/shaggyze/Userscripts/blob/main/MyAnimeList%20(MAL)%20Tags%20Updater.js
 // @namespace   https://greasyfork.org/users/7517
 // @updateURL   https://raw.githubusercontent.com/shaggyze/Userscripts/main/MyAnimeList%20(MAL)%20Tags%20Updater.js
 // @downloadURL https://raw.githubusercontent.com/shaggyze/Userscripts/main/MyAnimeList%20(MAL)%20Tags%20Updater.js
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
 // @icon        https://www.google.com/s2/favicons?domain=myanimelist.net
-// @version     6.1.6
+// @version     6.1.7
 // @author      shaggyze and akarin
 // @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
 // @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
