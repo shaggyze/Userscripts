@@ -6,7 +6,7 @@
 // @downloadURL https://raw.githubusercontent.com/shaggyze/Userscripts/main/MyAnimeList%20(MAL)%20Tags%20Updater.js
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
 // @icon        https://www.google.com/s2/favicons?domain=myanimelist.net
-// @version     6.1.7
+// @version     6.1.8
 // @author      shaggyze and akarin
 // @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
 // @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
@@ -886,6 +886,16 @@
     }
 
     if (mal.page === T_PAGE.M_POPUP) {
+//experimental keep old tags and remove duplicates
+if (document.querySelector('textarea#add_' + mal.type + '_tags').value != '') {
+var oldtags = document.querySelector('textarea#add_' + mal.type + '_tags').value;
+if (oldtags.indexOf('Score') >= 0) {oldtags = oldtags.replace(', Score: N/A', '')
+for (let i = 1; i < 9; i++) {oldtags = oldtags.replace(', Score: ' + i, '');}}
+tags = ' ' + tags + ', ' + oldtags;
+var arr = tags.split(',');
+tags = arr.filter(function(value, index, self) {return self.indexOf(value) === index;}).join(',');
+tags = tags.trimStart();
+}
       $('textarea#add_' + mal.type + '_tags').prop('value', tags);
     } else {
       if (tags === '') {
