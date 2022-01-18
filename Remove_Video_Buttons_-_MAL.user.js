@@ -1,8 +1,7 @@
 // ==UserScript==
 // @name         Remove Video Buttons - MAL
-// @namespace   https://openuserjs.org/meta/shaggyze/
-// @updateURL   https://openuserjs.org/meta/shaggyze/Remove%20Video%20Buttons%20-%20MAL.js
-// @downloadURL https://openuserjs.org/meta/shaggyze/Remove%20Video%20Buttons%20-%20MAL.js
+// @namespace   https://openuserjs.org/users/shaggyze/
+// @updateURL   https://openuserjs.org/meta/shaggyze/Remove_Video_Buttons_-_MAL.meta.js
 // @version      0.2
 // @description  Remove Video Buttons on MAL
 // @author       ShaggyZE

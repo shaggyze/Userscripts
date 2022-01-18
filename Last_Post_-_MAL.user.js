@@ -1,8 +1,7 @@
 // ==UserScript==
 // @name        Last Post - MAL
-// @namespace   https://openuserjs.org/meta/shaggyze/
-// @updateURL   https://openuserjs.org/meta/shaggyze/Last%20Post%20-%20MAL.js
-// @downloadURL https://openuserjs.org/meta/shaggyze/Last%20Post%20-%20MAL.js
+// @namespace   https://openuserjs.org/users/shaggyze/
+// @updateURL   https://openuserjs.org/install/shaggyze/Last_Post_-_MAL.meta.js
 // @version     0.8
 // @description Add Last Post link to MAL Forum Topics.
 // @author      ShaggyZE & hacker09
