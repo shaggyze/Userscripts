@@ -10,7 +10,7 @@
 // @icon         https://www.google.com/s2/favicons?domain=myanimelist.net
 // @run-at       document-end
 // @grant        none
-// @license      MIT License
+// @license      MIT; https://opensource.org/licenses/MIT
 // ==/UserScript==
 
 (function() {

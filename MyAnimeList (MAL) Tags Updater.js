@@ -13,7 +13,7 @@
 // @include     /^https?:\/\/myanimelist\.net\/ownlist\/(anime|manga)\//
 // @grant        GM_getValue
 // @grant        GM_setValue
-// @license      MIT License
+// @license      MIT; https://opensource.org/licenses/MIT
 // ==/UserScript==
 
 (function ($) {

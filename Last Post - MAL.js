@@ -9,7 +9,7 @@
 // @include      *://myanimelist.net/*
 // @icon        https://www.google.com/s2/favicons?domain=myanimelist.net
 // @run-at      document-end
-// @license      MIT License
+// @license      MIT; https://opensource.org/licenses/MIT
 // ==/UserScript==
 var TimesExecuted;
 (function() {
