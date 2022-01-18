@@ -1,12 +1,15 @@
 // ==UserScript==
 // @name        Last Post - MAL
-// @namespace   Last_Post
-// @version     0.7
+// @namespace   https://openuserjs.org/meta/shaggyze/
+// @updateURL   https://openuserjs.org/meta/shaggyze/Last%20Post%20-%20MAL.js
+// @downloadURL https://openuserjs.org/meta/shaggyze/Last%20Post%20-%20MAL.js
+// @version     0.8
 // @description Add Last Post link to MAL Forum Topics.
 // @author      ShaggyZE & hacker09
 // @include      *://myanimelist.net/*
 // @icon        https://www.google.com/s2/favicons?domain=myanimelist.net
 // @run-at      document-end
+// @license      MIT License
 // ==/UserScript==
 var TimesExecuted;
 (function() {
