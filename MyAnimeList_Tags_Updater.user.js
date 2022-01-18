@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name        MyAnimeList (MAL) Tags Updater
+// @name        MyAnimeList Tags Updater
 // @namespace   https://openuserjs.org/users/shaggyze/
-// @updateURL   https://openuserjs.org/install/shaggyze/MyAnimeList_(MAL)_Tags_Updater.meta.js
+// @updateURL   https://openuserjs.org/install/shaggyze/MyAnimeList_Tags_Updater.meta.js
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
 // @icon        https://www.google.com/s2/favicons?domain=myanimelist.net
 // @version     6.1.9
