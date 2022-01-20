@@ -2,7 +2,7 @@
 // @name         Remove Video Buttons - MAL
 // @namespace   https://openuserjs.org/users/shaggyze/scripts
 // @updateURL   https://openuserjs.org/meta/shaggyze/Remove_Video_Buttons_-_MAL.meta.js
-// @version      0.4
+// @version      0.5
 // @description  Remove Video Buttons on MAL
 // @author       ShaggyZE
 // @match        https://myanimelist.net/*

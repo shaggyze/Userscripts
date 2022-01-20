@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/install/shaggyze/MyAnimeList_Tags_Updater.meta.js
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
-// @version     6.2.1
+// @version     6.2.2
 // @author      shaggyze and akarin
 // @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
 // @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
