@@ -3,8 +3,8 @@
 // @namespace   https://openuserjs.org/users/shaggyze/scripts
 // @updateURL   https://openuserjs.org/install/shaggyze/MyAnimeList_Tags_Updater.meta.js
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
-// @icon        https://www.google.com/s2/favicons?domain=myanimelist.net
-// @version     6.2.0
+// @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
+// @version     6.2.1
 // @author      shaggyze and akarin
 // @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
 // @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
@@ -911,6 +911,21 @@ tags = tags.trimStart();
           return Promise.reject(id);
         }
       } else {
+//experimental keep old tags and remove duplicates
+const response = await fetch('https://api.jikan.moe/v3/user/' + username + '/' + mal.type + 'list'); //Fetch
+const newDocument = await response.json(); //Gets the fetch response
+if (newDocument != '') {
+var oldtags = oldtags = newDocument.(mal.type).(id); //Creates a variable to hold the old tags
+alert(oldtags);
+oldtags = oldtags.replace(' Score: N/A,', '');
+oldtags = oldtags.replace('Score: N/A,', '');
+for (let i = 1; i < 9; i++) {oldtags = oldtags.replace(' Score: ' + i + ',', '');oldtags = oldtags.replace('Score: ' + i + ',', '');}
+if (tags.indexOf(' ') == 0) {tags = tags.trimStart();}
+if (document.querySelector('textarea#add_' + mal.type + '_tags').value != '') {tags = ' ' + tags + ', ' + oldtags;}
+var arr = tags.split(',');
+tags = arr.filter(function(value, index, self) {return self.indexOf(value) === index;}).join(',');
+tags = tags.trimStart();
+}
         mal.tags[id] = tags;
       }
     }

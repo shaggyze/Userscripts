@@ -2,11 +2,11 @@
 // @name        Last Post - MAL
 // @namespace   https://openuserjs.org/users/shaggyze/scripts
 // @updateURL   https://openuserjs.org/install/shaggyze/Last_Post_-_MAL.meta.js
-// @version     0.9
+// @version     1.0
 // @description Add Last Post link to MAL Forum Topics.
 // @author      ShaggyZE & hacker09
 // @include      *://myanimelist.net/*
-// @icon        https://www.google.com/s2/favicons?domain=myanimelist.net
+// @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
 // @run-at      document-end
 // @license      MIT; https://opensource.org/licenses/MIT
 // ==/UserScript==
