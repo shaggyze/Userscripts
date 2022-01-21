@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/install/shaggyze/MyAnimeList_Tags_Updater.meta.js
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
-// @version     6.2.3
+// @version     6.2.4
 // @author      shaggyze and akarin
 // @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
 // @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
@@ -904,7 +904,7 @@ tags = tags.trimStart();
           await $.when($.ajax({
             type: 'POST',
             url: mal.tagsUrl,
-            data: mal.type[0] + 'id=' + id,
+            data: amid+'='+id+'&csrf_token='+csrf,
             dataType: 'text'
           }));
         } catch (e) {
@@ -1040,7 +1040,7 @@ tags = tags.trimStart();
             let data = await $.when($.ajax({
               type: 'POST',
               url: mal.tagsUrl + encodeURIComponent(mal.tags[id]),
-              data: mal.type[0] + 'id=' + id,
+              data: amid+'='+id+'&csrf_token='+csrf,
               dataType: 'text'
             }));
 
@@ -1181,7 +1181,14 @@ tags = tags.trimStart();
           .append('<small>update</small>')
       );
     }
-
-    mal.tagsUrl = '/includes/ajax.inc.php?' + (mal.type === 'anime' ? 't=22' : 't=30') + '&tags=';
+	var csrf = $('meta[name="csrf_token"]').attr('content');
+	var amid = '';
+	if(mal.type === 'anime') {
+		mal.tagsUrl = 'includes/ajax.inc.php?t=22&tags=';
+		amid = 'aid';
+	} else {
+		mal.tagsUrl = '/includes/ajax.inc.php?t=30&tags=';
+		amid = 'mid';
+	}
   }
 }(jQuery));
