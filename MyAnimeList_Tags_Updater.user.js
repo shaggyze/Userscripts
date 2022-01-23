@@ -1,18 +1,20 @@
 // ==UserScript==
 // @name        MyAnimeList Tags Updater
 // @namespace   https://openuserjs.org/users/shaggyze/scripts
-// @updateURL   https://openuserjs.org/install/shaggyze/MyAnimeList_Tags_Updater.meta.js
+// @updateURL   https://openuserjs.org/meta/shaggyze/MyAnimeList_Tags_Updater.meta.js
+// @downloadURL https://openuserjs.org/install/shaggyze/MyAnimeList_Tags_Updater.user.js
+// @copyright   2022, shaggyze (https://openuserjs.org/users/shaggyze)
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
-// @version     6.2.4
+// @version     6.2.5
 // @author      shaggyze and akarin
 // @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
 // @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
 // @include     /^https?:\/\/myanimelist\.net\/editlist\.php\?type=anime/
 // @include     /^https?:\/\/myanimelist\.net\/ownlist\/(anime|manga)\//
-// @grant        GM_getValue
-// @grant        GM_setValue
-// @license      MIT; https://opensource.org/licenses/MIT
+// @grant       GM_getValue
+// @grant       GM_setValue
+// @license     MIT; https://opensource.org/licenses/MIT
 // ==/UserScript==
 
 (function ($) {

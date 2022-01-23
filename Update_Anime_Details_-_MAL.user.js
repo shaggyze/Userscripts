@@ -1,8 +1,10 @@
 // ==UserScript==
 // @name         Update Anime Details - MAL
 // @namespace    https://openuserjs.org/users/shaggyze/
-// @updateURL    https://openuserjs.org/install/shaggyze/Update_Anime_Details_-_MAL.meta.js
-// @version      0.6
+// @updateURL    https://openuserjs.org/meta/shaggyze/Update_Anime_Details_-_MAL.meta.js
+// @downloadURL  https://openuserjs.org/install/shaggyze/Update_Anime_Details_-_MAL.user.js
+// @copyright    2022, shaggyze (https://openuserjs.org/users/shaggyze)
+// @version      0.7
 // @description  Click update in Edit Details of Anime/Manga then Submit and Close tab.
 // @author       ShaggyZE
 // @match        https://myanimelist.net/ownlist/*/*/edit
