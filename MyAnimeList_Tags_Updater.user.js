@@ -6,7 +6,7 @@
 // @copyright   2022, shaggyze (https://openuserjs.org/users/shaggyze)
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
-// @version     6.2.6
+// @version     6.2.7
 // @author      shaggyze and akarin
 // @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
 // @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
@@ -916,7 +916,12 @@ tags = tags.trimStart();
           await $.when($.ajax({
             type: 'POST',
             url: mal.tagsUrl,
-            data: amid+'='+id+'&csrf_token='+csrf,
+			headers: {
+			'Access-Control-Allow-Origin':'https://myanimelist.net',
+			'X-Requested-With':'XMLHttpRequest',
+			'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'
+			},
+			data: amid+'='+id+'&csrf_token='+csrf,
             dataType: 'text'
           }));
         } catch (e) {
@@ -1052,6 +1057,11 @@ tags = tags.trimStart();
             let data = await $.when($.ajax({
               type: 'POST',
               url: mal.tagsUrl + encodeURIComponent(mal.tags[id]),
+			  headers: {
+			  'Access-Control-Allow-Origin':'https://myanimelist.net',
+			  'X-Requested-With':'XMLHttpRequest',
+			  'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'
+			  },
               data: amid+'='+id+'&csrf_token='+csrf,
               dataType: 'text'
             }));
@@ -1196,7 +1206,7 @@ tags = tags.trimStart();
 	var csrf = $('meta[name="csrf_token"]').attr('content');
 	var amid = '';
 	if(mal.type === 'anime') {
-		mal.tagsUrl = 'includes/ajax.inc.php?t=22&tags=';
+		mal.tagsUrl = '/includes/ajax.inc.php?t=22&tags=';
 		amid = 'aid';
 	} else {
 		mal.tagsUrl = '/includes/ajax.inc.php?t=30&tags=';
