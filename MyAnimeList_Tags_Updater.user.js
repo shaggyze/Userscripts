@@ -6,7 +6,7 @@
 // @copyright   2022, shaggyze (https://openuserjs.org/users/shaggyze)
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
-// @version     6.2.5
+// @version     6.2.6
 // @author      shaggyze and akarin
 // @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
 // @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
@@ -119,6 +119,7 @@
     FAVORITES: 18,
     JAPANESE: 19,
     ENGLISH: 20,
+	STREAMING: 23,
     DURATION: 101,
     YEAR: 102,
     SEASON: 103,
@@ -157,7 +158,8 @@
       { id: T_.RANK, text: 'Rank', has_prefix: true, prefix: 'Ranked: ', def: false },
       { id: T_.POPULARITY, text: 'Popularity', has_prefix: true, prefix: 'Popularity: ', def: false },
       { id: T_.MEMBERS, text: 'Members', has_prefix: true, prefix: 'Members: ', def: false },
-      { id: T_.FAVORITES, text: 'Favorites', has_prefix: true, prefix: 'Favorites: ', def: false }
+      { id: T_.FAVORITES, text: 'Favorites', has_prefix: true, prefix: 'Favorites: ', def: false },
+	  { id: T_.STREAMING, text: 'Streaming', has_prefix: false, prefix: '', def: false }
     ],
     manga: [
       { id: T_.ENGLISH, text: 'English Title', has_prefix: true, prefix: '', def: true },
@@ -854,6 +856,14 @@
 
         case T_.FAVORITES:
           re = stats.match(/[\s\S]*?>Favorites:<\/span>\s*?([\d,]+?)\s*?</);
+          re = re ? re[1].replace(',', '') : 'N/A';
+          if (re !== 'N/A' || prefix.length > 0) {
+            result.push(prefix + re);
+          }
+          break;
+		  
+		 case T_.STREAMING:
+          re = stats.match(/class="caption">([\s\S]*?)<\/div>/);
           re = re ? re[1].replace(',', '') : 'N/A';
           if (re !== 'N/A' || prefix.length > 0) {
             result.push(prefix + re);
