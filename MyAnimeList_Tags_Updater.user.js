@@ -6,7 +6,7 @@
 // @copyright   2022, shaggyze (https://openuserjs.org/users/shaggyze)
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
-// @version     6.2.9
+// @version     6.3.0
 // @author      shaggyze and akarin
 // @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
 // @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
@@ -959,10 +959,10 @@ function wait(time) {
         const response = await fetch('/' + mal.type + '/' + id + '/_/news');
         if (!response.ok) {
           throw id;
-        } else {
-          window.open('https://myanimelist.net/' + mal.type + '/' + id);
-          await wait(60000);
-          throw id;
+        //} else {
+        //  window.open('https://myanimelist.net/' + mal.type + '/' + id);
+        //  await wait(60000);
+        //  throw id;
         }
         tags = getTags(await response.text());
       }
