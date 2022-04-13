@@ -6,7 +6,7 @@
 // @copyright   2022, shaggyze (https://openuserjs.org/users/shaggyze)
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
-// @version     6.2.8
+// @version     6.2.9
 // @author      shaggyze and akarin
 // @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
 // @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
@@ -16,7 +16,13 @@
 // @grant       GM_setValue
 // @license     MIT; https://opensource.org/licenses/MIT
 // ==/UserScript==
-
+function wait(time) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve();
+        }, time);
+    });
+}
 (function ($) {
   'use strict';
 
@@ -901,7 +907,7 @@
     if (document.querySelector('textarea#add_' + mal.type + '_tags').value != '') {
       var oldtags = document.querySelector('textarea#add_' + mal.type + '_tags').value;
       oldtags = oldtags.replace(/ ?Score: N\/A,/, ''); //Remove "Score: N/A," and/or " Score: N/A,"
-      oldtags = oldtags.replaceAll(/ ?Score: [1-9],/ ,''); // Remove " Score: [1-9]," and/or "Score: [1-9],"
+      if (oldtags.match("Score:") !== null) {oldtags = oldtags.replaceAll(/ ?Score: [1-9],/ ,'');} // Remove " Score: [1-9]," and/or "Score: [1-9],"
       tags = tags.trimStart(); //Trim beginning space
       tags = ' ' + tags + ', ' + oldtags; //Combine old tags with new tags if oldtags are present
       var arr = tags.split(','); //Split tags by comma into arr array
@@ -934,7 +940,7 @@
       var oldtags2 = newDocument.querySelector('textarea#add_' + mal.type + '_tags').value; //Get value of old tags
       if (oldtags2 != '') {
         oldtags2 = oldtags2.replace(/ ?Score: N\/A,/, ''); //Remove "Score: N/A," and/or " Score: N/A,"
-        oldtags2 = oldtags2.replaceAll(/ ?Score: [1-9],/ ,''); // Remove " Score: [1-9]," and/or "Score: [1-9],"
+        if (oldtags2.match("Score:") !== null) {oldtags2 = oldtags2.replaceAll(/ ?Score: [1-9],/ ,'');} // Remove " Score: [1-9]," and/or "Score: [1-9],"
         tags = tags.trimStart(); //Trim beginning space
         tags = ' ' + tags + ', ' + oldtags2; //Combine old tags with new tags if oldtags are present
         var arr2 = tags.split(','); //Split tags by comma into arr2 array
@@ -952,6 +958,10 @@
       if (mode !== T_RUN.M_CLEAR) {
         const response = await fetch('/' + mal.type + '/' + id + '/_/news');
         if (!response.ok) {
+          throw id;
+        } else {
+          window.open('https://myanimelist.net/' + mal.type + '/' + id);
+          await wait(60000);
           throw id;
         }
         tags = getTags(await response.text());
