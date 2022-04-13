@@ -6,7 +6,7 @@
 // @copyright   2022, shaggyze (https://openuserjs.org/users/shaggyze)
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
-// @version     6.2.7
+// @version     6.2.8
 // @author      shaggyze and akarin
 // @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
 // @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
@@ -861,7 +861,7 @@
             result.push(prefix + re);
           }
           break;
-		  
+
 		 case T_.STREAMING:
           re = stats.match(/class="caption">([\s\S]*?)<\/div>/);
           re = re ? re[1].replace(',', '') : 'N/A';
@@ -897,18 +897,17 @@
     }
 
     if (mal.page === T_PAGE.M_POPUP) {
-//experimental keep old tags and remove duplicates
-if (document.querySelector('textarea#add_' + mal.type + '_tags').value != '') {
-var oldtags = document.querySelector('textarea#add_' + mal.type + '_tags').value;
-oldtags = oldtags.replace(' Score: N/A,', '');
-oldtags = oldtags.replace('Score: N/A,', '');
-for (let i = 1; i < 9; i++) {oldtags = oldtags.replace(' Score: ' + i + ',', '');oldtags = oldtags.replace('Score: ' + i + ',', '');}
-if (tags.indexOf(' ') == 0) {tags = tags.trimStart();}
-if (document.querySelector('textarea#add_' + mal.type + '_tags').value != '') {tags = ' ' + tags + ', ' + oldtags;}
-var arr = tags.split(',');
-tags = arr.filter(function(value, index, self) {return self.indexOf(value) === index;}).join(',');
-tags = tags.trimStart();
-}
+    //experimental keep old tags and remove duplicates
+    if (document.querySelector('textarea#add_' + mal.type + '_tags').value != '') {
+      var oldtags = document.querySelector('textarea#add_' + mal.type + '_tags').value;
+      oldtags = oldtags.replace(/ ?Score: N\/A,/, ''); //Remove "Score: N/A," and/or " Score: N/A,"
+      oldtags = oldtags.replaceAll(/ ?Score: [1-9],/ ,''); // Remove " Score: [1-9]," and/or "Score: [1-9],"
+      tags = tags.trimStart(); //Trim beginning space
+      tags = ' ' + tags + ', ' + oldtags; //Combine old tags with new tags if oldtags are present
+      var arr = tags.split(','); //Split tags by comma into arr array
+      tags = arr.filter(function(value, index, self) {return self.indexOf(value) === index;}).join(','); //Joins tags again (removing duplicates)
+      tags = tags.trimStart(); //Trim beginning space
+    }
       $('textarea#add_' + mal.type + '_tags').prop('value', tags);
     } else {
       if (tags === '') {
@@ -928,7 +927,21 @@ tags = tags.trimStart();
           return Promise.reject(id);
         }
       } else {
-        mal.tags[id] = tags;
+      //experimental keep old tags and remove duplicates
+      const response = await fetch('https://myanimelist.net/ownlist/' + mal.type + '/' + id + '/edit?hideLayout'); //Fetch
+      const html = await response.text(); //Gets the fetch response
+      const newDocument = new DOMParser().parseFromString(html, 'text/html'); //Parses the fetch response
+      var oldtags2 = newDocument.querySelector('textarea#add_' + mal.type + '_tags').value; //Get value of old tags
+      if (oldtags2 != '') {
+        oldtags2 = oldtags2.replace(/ ?Score: N\/A,/, ''); //Remove "Score: N/A," and/or " Score: N/A,"
+        oldtags2 = oldtags2.replaceAll(/ ?Score: [1-9],/ ,''); // Remove " Score: [1-9]," and/or "Score: [1-9],"
+        tags = tags.trimStart(); //Trim beginning space
+        tags = ' ' + tags + ', ' + oldtags2; //Combine old tags with new tags if oldtags are present
+        var arr2 = tags.split(','); //Split tags by comma into arr2 array
+        tags = arr2.filter(function(value, index, self) {return self.indexOf(value) === index;}).join(','); //Joins tags again (removing duplicates)
+        tags = tags.trimStart(); //Trim beginning space
+      }
+      mal.tags[id] = tags;
       }
     }
   };
