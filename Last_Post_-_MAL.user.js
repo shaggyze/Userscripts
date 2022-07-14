@@ -19,7 +19,7 @@ var TimesExecuted;
   if (href.match(/topicid/) !== null) {
     href = href.replace(/\#.*/,'');
     document.querySelector("div.mt4.mb4.pl0.pb0.pt4.pb4 > div").insertAdjacentHTML('beforeEnd', `&nbsp;<a style="cursor: pointer;" href="` + href + `&goto=lastpost">Last Post »»</a>`); //Add the Last Post link before first post of current page.
-    document.querySelector("#quickReply").insertAdjacentHTML('beforeBegin', `<a style="cursor: pointer;" href="` + href + `&goto=lastpost">Last Post »»</a>`); //Add the Last Post link after last post of current page.
+    document.querySelector("#quickReply").insertAdjacentHTML('beforeBegin', `<br><a style="cursor: pointer;" href="` + href + `&goto=lastpost">Last Post »»</a>`); //Add the Last Post link after last post of current page.
     document.querySelector("div.mt4.mb4.pl0.pb0.pt4.pb4").insertAdjacentHTML('beforeEnd', `<a style="cursor: pointer;" onclick='[...document.querySelectorAll("div.forum-topic-message-wrapper")].pop().scrollIntoView()'>Bottom</a>`); //Add the Bottom link before first post of current page.
   }
   document.querySelector("div.header-menu-unit.header-notification").onmouseover = function() {
