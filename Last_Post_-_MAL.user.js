@@ -4,10 +4,10 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Last_Post_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Last_Post_-_MAL.user.js
 // @copyright   2022, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.4
+// @version     1.5
 // @description Add Last Post link to MAL Forum Topics and Notifications.
 // @author      ShaggyZE & hacker09
-// @match      *://myanimelist.net/*
+// @match       *://myanimelist.net/*
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
 // @run-at      document-end
 // @license     MIT; https://opensource.org/licenses/MIT

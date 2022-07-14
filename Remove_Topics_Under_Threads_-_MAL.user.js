@@ -4,10 +4,10 @@
 // @updateURL    https://openuserjs.org/meta/shaggyze/Remove_Topics_Under_Threads_-_MAL.meta.js
 // @downloadURL  https://openuserjs.org/install/shaggyze/Remove_Topics_Under_Threads_-_MAL.user.js
 // @copyright    2022, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version      0.1
+// @version      0.2
 // @description  Remove Topics Under Threads on MAL
 // @author       ShaggyZE
-// @match        https://myanimelist.net/*
+// @match        *://myanimelist.net/forum/*
 // @icon         https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
 // @run-at       document-end
 // @grant        none
