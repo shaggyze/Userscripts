@@ -6,12 +6,12 @@
 // @copyright   2022, shaggyze (https://openuserjs.org/users/shaggyze)
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
-// @version     6.3.2
+// @version     6.3.3
 // @author      shaggyze and akarin
-// @match     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
-// @match     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
-// @match     /^https?:\/\/myanimelist\.net\/editlist\.php\?type=anime/
-// @match     /^https?:\/\/myanimelist\.net\/ownlist\/(anime|manga)\//
+// @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
+// @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
+// @include     /^https?:\/\/myanimelist\.net\/editlist\.php\?type=anime/
+// @include     /^https?:\/\/myanimelist\.net\/ownlist\/(anime|manga)\//
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @license     MIT; https://opensource.org/licenses/MIT
