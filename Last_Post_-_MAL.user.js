@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Last_Post_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Last_Post_-_MAL.user.js
 // @copyright   2022, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.6
+// @version     1.7
 // @description Add Last Post link to MAL Forum Topics and Notifications.
 // @author      ShaggyZE & hacker09
 // @match       *://myanimelist.net/*
@@ -16,11 +16,10 @@ var TimesExecuted;
 (function() {
   'use strict';
   var href = location.href;
-  if (href.match('modules.php?go=report&type=forummessage&id') !== null) {
+  if (href.match('forummessage') !== null) {
     let topicid = href.split('=',5);
     document.querySelector("div.goodresult").insertAdjacentHTML('beforeEnd', `<br><br><a style="cursor: pointer;" href=https://myanimelist.net/forum/?topicid=` + topicid[4] + `&goto=lastpost>Last Post »»</a>`); //Add the Last Post link on Report page.
-  }
-  if (href.match(/topicid/) !== null) {
+  } else if (href.match(/topicid/) !== null) {
     href = href.replace(/\#.*/,'');
 	document.querySelector("div.mt4.mb4.pl0.pb0.pt4.pb4").insertAdjacentHTML('beforeEnd', `<a style="cursor: pointer;" onclick='[...document.querySelectorAll("div.forum-topic-message-wrapper")].pop().scrollIntoView()'>Bottom</a>`); //Add the Bottom link before first post of current page.
     document.querySelector("div.mt4.mb4.pl0.pb0.pt4.pb4 > div").insertAdjacentHTML('beforeEnd', `&nbsp;<a style="cursor: pointer;" href="` + href + `&goto=lastpost">Last Post »»</a>`); //Add the Last Post link before first post of current page.
@@ -30,7 +29,7 @@ var TimesExecuted;
   if (TimesExecuted == undefined) {
     document.querySelectorAll("ol.header-notification-item-list > li > div > div:nth-child(2) > span > a:nth-child(2)").forEach(function(el){
     if (el.href.match(/topicid/) !== null) {
-      el.insertAdjacentHTML('beforeEnd', `&nbsp;<a style="cursor: pointer;" href="` + el.href + `&goto=lastpost">Last Post »»</a>`); //
+      el.insertAdjacentHTML('afterEnd', `&nbsp;<a style="cursor: pointer;" href="` + el.href + `&goto=lastpost">Last Post »»</a>`); //
     }
     TimesExecuted += 1;;
     })
