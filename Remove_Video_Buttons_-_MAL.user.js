@@ -4,10 +4,10 @@
 // @updateURL    https://openuserjs.org/meta/shaggyze/Remove_Video_Buttons_-_MAL.meta.js
 // @downloadURL  https://openuserjs.org/install/shaggyze/Remove_Video_Buttons_-_MAL.user.js
 // @copyright    2022, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version      0.7
+// @version      0.8
 // @description  Remove Video Buttons on MAL
 // @author       ShaggyZE
-// @match        *://myanimelist.net/*
+// @match        https://myanimelist.net/*
 // @icon         https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
 // @run-at       document-end
 // @grant        none
@@ -16,8 +16,8 @@
 
 (function() {
     'use strict';
-
-        document.querySelectorAll("div.oped-video-button").forEach(a => a.parentNode.remove()); //Remove all video buttons
-        document.querySelectorAll('div[class*="oped-preview-button"]').forEach(a => a.parentNode.remove());
-        document.querySelectorAll('i[class*="malicon"]').forEach(a => a.parentNode.remove());
+     document.querySelectorAll("div.oped-video-button,i[class*="malicon-movie-episode"],i[class*="malicon-movie-pv"]").forEach(a => a.parentNode.remove()); //Remove all video buttons
+    window.onscroll = async function() { //Creates a new function to run when the page is scrolled
+		document.querySelectorAll('div[class*="oped-preview-button"]').forEach(a => a.parentNode.style.display = 'block'); //Show all audio buttons
+    }; //Finishes the onscroll event listener
 })();

@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Last_Post_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Last_Post_-_MAL.user.js
 // @copyright   2022, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.9
+// @version     2.0
 // @description Add Last Post link to MAL Forum Topics and Notifications.
 // @author      ShaggyZE & hacker09
 // @match       *://myanimelist.net/*
@@ -19,7 +19,7 @@ var TimesExecuted;
     var href=location.href;
     if (href.match('forummessage') !==null) {
         let topicid=href.split('=', 5);
-        document.querySelector("div.goodresult").insertAdjacentHTML('beforeEnd', `<br><br><a style="cursor: pointer;" href=https: //myanimelist.net/forum/?topicid=` + topicid[4] + `&goto=lastpost>Last Post »»</a>`); //Add the Last Post link on Report page.
+        document.querySelector("div.goodresult").insertAdjacentHTML('beforeEnd', `<br><br><a style="cursor: pointer;" href=https://myanimelist.net/forum/?topicid=` + topicid[4] + `&goto=lastpost>Last Post »»</a>`); //Add the Last Post link on Report page.
     }
     else if (href.match(/topicid/) !==null) {
         href=href.replace(/\#.*/, '');
