@@ -6,7 +6,7 @@
 // @copyright   2022, shaggyze (https://openuserjs.org/users/shaggyze)
 // @description Adds type, genres and other info to entries tags. Can also delete all current tags.
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
-// @version     6.3.3
+// @version     6.3.4
 // @author      shaggyze and akarin
 // @include     /^https?:\/\/myanimelist\.net\/(anime|manga)list\//
 // @include     /^https?:\/\/myanimelist\.net\/panel\.php\?go=(add|edit)/
@@ -780,6 +780,9 @@ function wait(time) {
 
         case T_.SOURCE:
           re = info.match(/[\s\S]*?>Source:<\/span>[^<]*?<a\shref=[^>]+?>([\s\S]*?)<\/a>[^<]*?<\/div>/);
+          if (!re) {
+              re = info.match(/[\s\S]*?>Source:<\/span>([\s\S]*?)<\/div>/);
+          }
           if (re) {
             re = re[1].trim().replace('Unknown', 'N/A');
             if (re !== 'N/A' || prefix.length > 0) {
