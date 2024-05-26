@@ -779,7 +779,7 @@ function wait(time) {
           break;
 
         case T_.SOURCE:
-          re = info.match(/[\s\S]*?>Source:<\/span>([\s\S]*?)<\/div>/);
+          re = info.match(/[\s\S]*?>Source:<\/span>[^<]*?<a\shref=[^>]+?>([\s\S]*?)<\/a>[^<]*?<\/div>/);
           if (re) {
             re = re[1].trim().replace('Unknown', 'N/A');
             if (re !== 'N/A' || prefix.length > 0) {

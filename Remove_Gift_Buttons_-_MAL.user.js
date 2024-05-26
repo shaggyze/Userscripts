@@ -4,10 +4,11 @@
 // @updateURL    https://openuserjs.org/meta/shaggyze/Remove_Gift_Buttons_-_MAL.meta.js
 // @downloadURL  https://openuserjs.org/install/shaggyze/Remove_Gift_Buttons_-_MAL.user.js
 // @copyright    2022, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version      0.2
+// @version      0.3
 // @description  Remove Gift Buttons on MAL
 // @author       ShaggyZE
 // @match        *://myanimelist.net/*
+// @exclude      *://myanimelist.net/account/membership/*
 // @icon         https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
 // @run-at       document-begin
 // @grant        none
@@ -16,8 +17,8 @@
 
 (function() {
     'use strict';
-
         document.querySelectorAll('div[class*="gift"]').forEach(a => a.remove()); //Remove all gift buttons
         document.querySelectorAll('a[class*="gift"]').forEach(a => a.remove());
         document.querySelectorAll('a[class*="icon-gift"]').forEach(a => a.remove());
+        document.querySelectorAll('button[class*="gift"]').forEach(a => a.remove());
 })();
