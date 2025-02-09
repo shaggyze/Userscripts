@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.1
+// @version     1.2
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @match       *://*.myanimelist.net/*
@@ -82,6 +82,8 @@
 
                         if (type) {
                             let apiUrl = `https://shaggyze.website/msa/info?t=${type}&id=${id}`;
+                            infoDiv.innerHTML = "Loading...";
+                            infoDiv.style.display = 'block';
 
                             GM_xmlhttpRequest({
                                 method: 'GET',
