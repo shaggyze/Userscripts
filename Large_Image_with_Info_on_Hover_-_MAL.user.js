@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.3
+// @version     1.4
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @match       *://*.myanimelist.net/*
@@ -94,37 +94,46 @@
                                 onload: function(response) {
                                     if (response.status === 200) {
                                         try {
-                                            let data = JSON.parse(response.responseText);
+                                            let api = JSON.parse(response.responseText);
 
-                                            let synopsis = data.data.synopsis || "No synopsis available.";
+                                            let synopsis = api.data.synopsis || "No synopsis available.";
                                             synopsis = synopsis.length > 100 ? synopsis.substring(0, truncateSynopsis) + "..." : synopsis;
+
+                                            let studios = api.data.studios;
+                                            let studioNames = "Unknown";
+
+                                            if (studios && studios.length > 0) {
+                                                 studioNames = studios.map(studio => studio.name).join(", ");
+                                            } else if (studios && studios.name) {
+                                                 studioNames = studios.name;
+                                            }
 
                                             if (type == 'anime') {
                                             allData = `
-                                                <div><b>English Title:</b> ${data.data.title_english}</div>
-                                                <div><b>Source:</b> ${data.data.source}</div>
-                                                <div><b>Broadcast:</b> ${data.data.broadcast}</div>
-                                                <div><b>Episodes:</b> ${data.data.episodes || "Unknown"}</div>
-                                                <div><b>Score:</b> ${data.data.score}</div>
-                                                <div><b>Studio:</b> ${data.data.studios.name}</div>
-                                                <div><b>Premiered:</b> ${data.data.premiered}</div>
-                                                <div><b>Aired:</b> ${data.data.aired.start} to ${data.data.aired.end}</div>
+                                                <div><b>English Title:</b> ${api.data.title_english || "Unknown"}</div>
+                                                <div><b>Source:</b> ${api.data.source}</div>
+                                                <div><b>Broadcast:</b> ${api.data.broadcast || "Unknown"}</div>
+                                                <div><b>Episodes:</b> ${api.data.episodes || "Unknown"}</div>
+                                                <div><b>Score:</b> ${api.data.score}</div>
+                                                <div><b>Studios:</b> ${studioNames}</div>
+                                                <div><b>Premiered:</b> ${api.data.premiered || "Unknown"}</div>
+                                                <div><b>Aired:</b> ${api.data.aired.start} to ${api.data.aired.end}</div>
                                                 <div>${synopsis}</div>
                                             `;
                                             } else {
                                             allData = `
-                                                <div><b>English Title:</b> ${data.data.title_english}</div>
-                                                <div><b>Type:</b> ${data.data.type}</div>
-                                                <div><b>Volumes:</b> ${data.data.volumes}</div>
-                                                <div><b>Chapters:</b> ${data.data.chapters || "Unknown"}</div>
-                                                <div><b>Score:</b> ${data.data.score}</div>
-                                                <div><b>Published:</b> ${data.data.published.start} to ${data.data.published.end}</div>
+                                                <div><b>English Title:</b> ${api.data.title_english || "Unknown"}</div>
+                                                <div><b>Type:</b> ${api.data.type}</div>
+                                                <div><b>Volumes:</b> ${api.data.volumes || "Unknown"}</div>
+                                                <div><b>Chapters:</b> ${api.data.chapters || "Unknown"}</div>
+                                                <div><b>Score:</b> ${api.data.score}</div>
+                                                <div><b>Published:</b> ${api.data.published.start} to ${api.data.published.end}</div>
                                                 <div>${synopsis}</div>
                                             `;
                                             }
                                             infoDiv.innerHTML = `<div>${allData}</div>`;
                                             infoDiv.style.display = 'block';
-                                            console.log(`Successfully retrieved info for ${type} ID: ${id}`, data);
+                                            console.log(`Successfully retrieved info for ${type} ID: ${id}`, api);
                                         } catch (error) {
                                             console.error("Error parsing JSON response:", error, response.responseText);
                                             infoDiv.innerHTML = `Error parsing JSON. (ID: ${id}, Type: ${type})`;
