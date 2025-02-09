@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name        MAL - Large Image with Info on Hover
+// @name        Large Image with Info on Hover - MAL
 // @namespace   https://openuserjs.org/users/shaggyze/scripts
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1
+// @version     1.1
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @match       *://*.myanimelist.net/*
