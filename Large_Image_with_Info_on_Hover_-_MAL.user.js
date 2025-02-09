@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.4
+// @version     1.5
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @match       *://*.myanimelist.net/*
@@ -22,6 +22,7 @@
     let largeImage = null;
     let infoDiv = null;
     let allData = null;
+    let otherData = null;
 
     function createPopup() {
         largeImage = document.createElement('img');
@@ -108,30 +109,28 @@
                                                  studioNames = studios.name;
                                             }
 
-                                            if (type == 'anime') {
                                             allData = `
                                                 <div><b>English Title:</b> ${api.data.title_english || "Unknown"}</div>
-                                                <div><b>Source:</b> ${api.data.source}</div>
+                                                <div><b>Score:</b> ${api.data.score || "Unknown"}</div>
+                                            `;
+                                            if (type == 'anime') {
+                                            otherData = `
+                                                <div><b>Source:</b> ${api.data.source || "Unknown"}</div>
                                                 <div><b>Broadcast:</b> ${api.data.broadcast || "Unknown"}</div>
                                                 <div><b>Episodes:</b> ${api.data.episodes || "Unknown"}</div>
-                                                <div><b>Score:</b> ${api.data.score}</div>
                                                 <div><b>Studios:</b> ${studioNames}</div>
                                                 <div><b>Premiered:</b> ${api.data.premiered || "Unknown"}</div>
-                                                <div><b>Aired:</b> ${api.data.aired.start} to ${api.data.aired.end}</div>
-                                                <div>${synopsis}</div>
+                                                <div><b>Aired:</b> ${api.data.aired.start || "Unknown"} to ${api.data.aired.end || "Unknown"}</div>
                                             `;
                                             } else {
-                                            allData = `
-                                                <div><b>English Title:</b> ${api.data.title_english || "Unknown"}</div>
-                                                <div><b>Type:</b> ${api.data.type}</div>
+                                            otherData = `
+                                                <div><b>Type:</b> ${api.data.type || "Unknown"}</div>
                                                 <div><b>Volumes:</b> ${api.data.volumes || "Unknown"}</div>
                                                 <div><b>Chapters:</b> ${api.data.chapters || "Unknown"}</div>
-                                                <div><b>Score:</b> ${api.data.score}</div>
-                                                <div><b>Published:</b> ${api.data.published.start} to ${api.data.published.end}</div>
-                                                <div>${synopsis}</div>
+                                                <div><b>Published:</b> ${api.data.published.start || "Unknown"} to ${api.data.published.end || "Unknown"}</div>
                                             `;
                                             }
-                                            infoDiv.innerHTML = `<div>${allData}</div>`;
+                                            infoDiv.innerHTML = `${allData}<br>${otherData}<br>${synopsis}`;
                                             infoDiv.style.display = 'block';
                                             console.log(`Successfully retrieved info for ${type} ID: ${id}`, api);
                                         } catch (error) {
