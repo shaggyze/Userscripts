@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.2
+// @version     1.3
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @match       *://*.myanimelist.net/*
@@ -17,8 +17,11 @@
 (function() {
     'use strict';
 
+    const largeFactor = 5.5;
+	const truncateSynopsis = 400;
     let largeImage = null;
     let infoDiv = null;
+    let allData = null;
 
     function createPopup() {
         largeImage = document.createElement('img');
@@ -27,14 +30,15 @@
         largeImage.style.left = '10px';
         largeImage.style.maxWidth = '75%';
         largeImage.style.maxHeight = '75%';
-        largeImage.style.display = 'none';
         largeImage.style.zIndex = '9999';
+        largeImage.style.display = 'none';
         document.body.appendChild(largeImage);
 
         infoDiv = document.createElement('div');
         infoDiv.style.position = 'fixed';
         infoDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
         infoDiv.style.color = 'white';
+        infoDiv.style.textAlign = 'left';
         infoDiv.style.padding = '10px';
         infoDiv.style.maxWidth = '400px';
         infoDiv.style.zIndex = '9999';
@@ -57,7 +61,6 @@
 
             const img = new Image();
             img.onload = function() {
-                const largeFactor = 5;
                 largeImage.width = 40 * largeFactor;
                 largeImage.height = 60 * largeFactor;
                 let modifiedImageUrl = imageUrl;
@@ -94,10 +97,11 @@
                                             let data = JSON.parse(response.responseText);
 
                                             let synopsis = data.data.synopsis || "No synopsis available.";
-                                            synopsis = synopsis.length > 100 ? synopsis.substring(0, 200) + "..." : synopsis;
-                                            let allData = "";
+                                            synopsis = synopsis.length > 100 ? synopsis.substring(0, truncateSynopsis) + "..." : synopsis;
+
                                             if (type == 'anime') {
                                             allData = `
+                                                <div><b>English Title:</b> ${data.data.title_english}</div>
                                                 <div><b>Source:</b> ${data.data.source}</div>
                                                 <div><b>Broadcast:</b> ${data.data.broadcast}</div>
                                                 <div><b>Episodes:</b> ${data.data.episodes || "Unknown"}</div>
@@ -109,6 +113,7 @@
                                             `;
                                             } else {
                                             allData = `
+                                                <div><b>English Title:</b> ${data.data.title_english}</div>
                                                 <div><b>Type:</b> ${data.data.type}</div>
                                                 <div><b>Volumes:</b> ${data.data.volumes}</div>
                                                 <div><b>Chapters:</b> ${data.data.chapters || "Unknown"}</div>
