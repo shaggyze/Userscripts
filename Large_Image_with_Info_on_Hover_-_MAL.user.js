@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.6.1
+// @version     1.6.2
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @match       *://*.myanimelist.net/*
@@ -193,7 +193,7 @@
 
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
-        if (target.tagName === 'A') {
+        if (target.tagName !== 'IMG') { // Use !== for clarity
             closePopup();
         }
     });
