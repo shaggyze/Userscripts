@@ -4,12 +4,12 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.5
+// @version     1.6.1
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @match       *://*.myanimelist.net/*
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
-// @run-at      document-end
+// @run-at      document-start
 // @license     MIT; https://opensource.org/licenses/MIT
 // @grant       GM_xmlhttpRequest
 // ==/UserScript==
@@ -24,7 +24,7 @@
     let allData = null;
     let otherData = null;
 
-    function createPopup() {
+    function createlargeImage() {
         largeImage = document.createElement('img');
         largeImage.style.position = 'fixed';
         largeImage.style.top = '10px';
@@ -34,7 +34,9 @@
         largeImage.style.zIndex = '9999';
         largeImage.style.display = 'none';
         document.body.appendChild(largeImage);
+    }
 
+    function createinfoDiv() {
         infoDiv = document.createElement('div');
         infoDiv.style.position = 'fixed';
         infoDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
@@ -47,21 +49,28 @@
         document.body.appendChild(infoDiv);
     }
 
+    function closePopup() {
+        largeImage.style.display = 'none';
+        largeImage.src = "";
+        infoDiv.style.display = 'none';
+        infoDiv.innerHTML = "";
+    }
+
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
         if (target.tagName === 'IMG') {
-            const imageUrl = target.src || target.dataset.src;
+            let imageElement = target.closest('IMG');
+            let imageUrl = imageElement ? imageElement.src : 'https://shaggyze.website/images/anime/unavailable.png';
 
             if (!imageUrl) return;
 
-            if (!imageUrl.includes("/anime/") && !imageUrl.includes("/manga/")) return;
+            if (!imageUrl.includes("/images/anime/") && !imageUrl.includes("/images/manga/")) return;
 
-            if (!largeImage) {
-                createPopup();
-            }
+            if (!largeImage) createlargeImage();
 
             const img = new Image();
             img.onload = function() {
+
                 largeImage.width = 40 * largeFactor;
                 largeImage.height = 60 * largeFactor;
                 let modifiedImageUrl = imageUrl;
@@ -72,6 +81,9 @@
                 largeImage.style.display = 'block';
 
                 const rect = largeImage.getBoundingClientRect();
+
+                if (!infoDiv) createinfoDiv();
+
                 infoDiv.style.top = rect.top + 'px';
                 infoDiv.style.left = rect.left + rect.width + 10 + 'px';
 
@@ -98,37 +110,49 @@
                                             let api = JSON.parse(response.responseText);
 
                                             let synopsis = api.data.synopsis || "No synopsis available.";
-                                            synopsis = synopsis.length > 100 ? synopsis.substring(0, truncateSynopsis) + "..." : synopsis;
+                                            synopsis = synopsis.length > truncateSynopsis ? synopsis.substring(0, truncateSynopsis) + "..." : synopsis;
 
                                             let studios = api.data.studios;
                                             let studioNames = "Unknown";
 
-                                            if (studios && studios.length > 0) {
-                                                 studioNames = studios.map(studio => studio.name).join(", ");
-                                            } else if (studios && studios.name) {
-                                                 studioNames = studios.name;
+                                            let serializations = api.data.serialization;
+                                            let serializationNames = "Unknown";
+
+                                            if ((studios && studios.length > 0) || (serializations && serializations.length > 0)) {
+                                                if (type == 'anime') {
+                                                    studioNames = studios.map(studio => studio.name).join(", ");
+                                                } else {
+                                                    serializationNames = serializations.map(serialization => serialization.name).join(", ");
+                                                }
+                                            } else if ((studios && studios.name) || (serializations && serializations.name)) {
+                                                if (type == 'anime') {
+                                                    studioNames = studios.name;
+                                                } else {
+                                                    serializationNames = serializations.name;
+                                                }
                                             }
 
                                             allData = `
-                                                <div><b>English Title:</b> ${api.data.title_english || "Unknown"}</div>
-                                                <div><b>Score:</b> ${api.data.score || "Unknown"}</div>
+                                            <div><b>English Title:</b> ${api.data.title_english || "Unknown"}</div>
+                                            <div><b>Score:</b> ${api.data.score || "Unknown"}</div>
                                             `;
                                             if (type == 'anime') {
-                                            otherData = `
+                                                otherData = `
                                                 <div><b>Source:</b> ${api.data.source || "Unknown"}</div>
                                                 <div><b>Broadcast:</b> ${api.data.broadcast || "Unknown"}</div>
                                                 <div><b>Episodes:</b> ${api.data.episodes || "Unknown"}</div>
                                                 <div><b>Studios:</b> ${studioNames}</div>
                                                 <div><b>Premiered:</b> ${api.data.premiered || "Unknown"}</div>
                                                 <div><b>Aired:</b> ${api.data.aired.start || "Unknown"} to ${api.data.aired.end || "Unknown"}</div>
-                                            `;
+                                                `;
                                             } else {
-                                            otherData = `
+                                                otherData = `
                                                 <div><b>Type:</b> ${api.data.type || "Unknown"}</div>
                                                 <div><b>Volumes:</b> ${api.data.volumes || "Unknown"}</div>
                                                 <div><b>Chapters:</b> ${api.data.chapters || "Unknown"}</div>
+                                                <div><b>Serialization:</b> ${serializationNames}</div>
                                                 <div><b>Published:</b> ${api.data.published.start || "Unknown"} to ${api.data.published.end || "Unknown"}</div>
-                                            `;
+                                                `;
                                             }
                                             infoDiv.innerHTML = `${allData}<br>${otherData}<br>${synopsis}`;
                                             infoDiv.style.display = 'block';
@@ -167,13 +191,16 @@
         }
     });
 
+    document.addEventListener('mouseover', function(event) {
+        const target = event.target;
+        if (target.tagName === 'A') {
+            closePopup();
+        }
+    });
     document.addEventListener('mouseout', function(event) {
         const target = event.target;
         if (target.tagName === 'IMG') {
-            largeImage.style.display = 'none';
-            largeImage.src = "";
-            infoDiv.style.display = 'none';
-            infoDiv.innerHTML = "";
+            closePopup();
         }
     });
 
