@@ -193,7 +193,7 @@
 
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
-        if (target.tagName !== 'IMG') { // Use !== for clarity
+        if (target.tagName !== 'IMG') {
             closePopup();
         }
     });
