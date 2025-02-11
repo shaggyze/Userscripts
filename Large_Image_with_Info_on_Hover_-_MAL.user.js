@@ -32,7 +32,6 @@
         return;
     }
 
-// Rest of your script code...
     function createlargeImage() {
         largeImage = document.createElement('img');
         largeImage.style.position = 'fixed';
