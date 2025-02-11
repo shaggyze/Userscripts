@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.6.4
+// @version     1.6.5
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @include     *
@@ -24,6 +24,7 @@
     let infoDiv = null;
     let allData = null;
     let otherData = null;
+    let imageUrl = null;
 
     const excludedUrls = /^(https?:\/\/)?myanimelist\.net\/(anime|manga)(?!\/(season|adapted)(?:\/|$))(?:\/.*)?$/;
 
@@ -41,6 +42,7 @@
         largeImage.style.maxHeight = '75%';
         largeImage.style.zIndex = '9999';
         largeImage.style.display = 'none';
+        largeImage.src = imageUrl;
         document.body.appendChild(largeImage);
     }
 
@@ -66,37 +68,27 @@
 
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
-        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM') {
+        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'B') {
             let imageElement = target.closest('IMG');
-            let imageUrl = imageElement?.src || imageElement?.dataset?.src || imageElement?.dataset?.bg;
+            imageUrl = imageElement?.src || imageElement?.dataset?.src || imageElement?.dataset?.bg || 'https://shaggyze.website/images/anime/transparent.png';
             if (debug) console.log('1 ' + imageUrl);
-            if (!imageUrl) {
-                const prevSibling = imageElement?.previousElementSibling;
-                const nextSibling = imageElement?.nextElementSibling;
-
-                if (prevSibling?.tagName === 'IMG' || target.tagName === 'A') {
-                    imageUrl = prevSibling?.src || prevSibling?.dataset?.src || prevSibling?.dataset?.bg;
-                } else if (nextSibling?.tagName === 'IMG' || target.tagName === 'A') {
-                    imageUrl = nextSibling?.src || nextSibling?.dataset?.src || nextSibling?.dataset?.bg;
-                }
-            }
-            if (debug) console.log('2 ' + imageUrl);
-            imageUrl = imageUrl || 'https://shaggyze.website/images/anime/transparent.png';
 
             if (!imageUrl.includes("/images/anime/") && !imageUrl.includes("/images/manga/")) return;
+            if (debug) console.log('2 ' + imageUrl)
 
             if (!largeImage) createlargeImage();
             if (debug) console.log('3 ' + imageUrl);
+
             const img = new Image();
             img.onload = function() {
 
                 largeImage.width = 40 * largeFactor;
                 largeImage.height = 60 * largeFactor;
-                let modifiedImageUrl = imageUrl;
-                modifiedImageUrl = modifiedImageUrl.replace(/\/r\/\d+x\d+\//, '/');
-                modifiedImageUrl = modifiedImageUrl.replace(/\?s=.*$/, '');
 
-                largeImage.src = modifiedImageUrl;
+                imageUrl = imageUrl.replace(/\/r\/\d+x\d+\//, '/')
+                                   .replace(/\?s=.*$/, '')
+                                   .replace(/t\.(jpg|webp)|(\.(jpg|webp))/g, "l.jpg");
+                largeImage.src = imageUrl;
                 largeImage.style.display = 'block';
 
                 if (!infoDiv) createinfoDiv();
@@ -214,13 +206,13 @@
 
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
-        if (target.tagName !== 'IMG' || target.tagName !== 'A' || target.tagName !== 'EM') {
+        if (target.tagName !== 'IMG' || target.tagName !== 'A' || target.tagName !== 'EM' || target.tagName !== 'B') {
                 closePopup();
         }
     });
     document.addEventListener('mouseout', function(event) {
         const target = event.target;
-        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM') {
+        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName !== 'B') {
             closePopup();
         }
     });
