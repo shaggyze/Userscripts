@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.6.3
+// @version     1.6.4
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @include     *
@@ -18,11 +18,13 @@
     'use strict';
 
     const largeFactor = 5.5;
-	const truncateSynopsis = 300;
+    const truncateSynopsis = 300;
+    let debug = false;
     let largeImage = null;
     let infoDiv = null;
     let allData = null;
     let otherData = null;
+
     const excludedUrls = /^(https?:\/\/)?myanimelist\.net\/(anime|manga)(?!\/(season|adapted)(?:\/|$))(?:\/.*)?$/;
 
     if (excludedUrls.test(location.href)) {
@@ -65,10 +67,10 @@
 
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
-        if (target.tagName === 'IMG' || target.tagName === 'A') {
+        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM') {
             let imageElement = target.closest('IMG');
             let imageUrl = imageElement?.src || imageElement?.dataset?.src || imageElement?.dataset?.bg;
-
+            if (debug) console.log('1 ' + imageUrl);
             if (!imageUrl) {
                 const prevSibling = imageElement?.previousElementSibling;
                 const nextSibling = imageElement?.nextElementSibling;
@@ -79,13 +81,13 @@
                     imageUrl = nextSibling?.src || nextSibling?.dataset?.src || nextSibling?.dataset?.bg;
                 }
             }
-
-            imageUrl = imageUrl || 'https://shaggyze.website/images/anime/transparent.png'; // Default if still no image URL
+            if (debug) console.log('2 ' + imageUrl);
+            imageUrl = imageUrl || 'https://shaggyze.website/images/anime/transparent.png';
 
             if (!imageUrl.includes("/images/anime/") && !imageUrl.includes("/images/manga/")) return;
 
             if (!largeImage) createlargeImage();
-
+            if (debug) console.log('3 ' + imageUrl);
             const img = new Image();
             img.onload = function() {
 
@@ -98,16 +100,16 @@
                 largeImage.src = modifiedImageUrl;
                 largeImage.style.display = 'block';
 
-                const rect = largeImage.getBoundingClientRect();
-
                 if (!infoDiv) createinfoDiv();
-
+                if (debug) console.log('4 ' + imageUrl);
+                const rect = largeImage.getBoundingClientRect();
                 infoDiv.style.top = rect.top + 'px';
                 infoDiv.style.left = rect.left + rect.width + 10 + 'px';
 
                 let anchor = target.closest('a');
 
                 if (anchor && anchor.href) {
+                    if (debug) console.log('5 ' + anchor.href);
                     let href = anchor.href;
                     let match = href.match(/https?:\/\/myanimelist\.net\/(anime|manga)\/(\d+)(?:\/|$)/);
                     let type = match ? match[1] : null;
@@ -176,35 +178,35 @@
                                             largeImage.style.display = 'block';
                                             infoDiv.innerHTML = `${allData}<br>${otherData}<br>${synopsis}`;
                                             infoDiv.style.display = 'block';
-                                            console.log(`Successfully retrieved info for ${type} ID: ${id}`, api);
+                                            if (debug) console.log(`Successfully retrieved info for ${type} ID: ${id}`, api);
                                         } catch (error) {
-                                            console.error("Error parsing JSON response:", error, response.responseText);
-                                            infoDiv.innerHTML = `Error parsing JSON. (ID: ${id}, Type: ${type})`;
-                                            infoDiv.style.display = 'block';
+                                            if (debug) console.error("Error parsing JSON response:", error, response.responseText);
+                                            if (debug) infoDiv.innerHTML = `Error parsing JSON. (ID: ${id}, Type: ${type})`;
+                                            if (debug) infoDiv.style.display = 'block';
                                         }
 
                                     } else {
-                                        console.error(`Error loading info for ${type} ID: ${id}. Status: ${response.status}`, response);
-                                        infoDiv.innerHTML = `Error loading info. Status: ${response.status} (ID: ${id}, Type: ${type})`;
-                                        infoDiv.style.display = 'block';
+                                        if (debug) console.error(`Error loading info for ${type} ID: ${id}. Status: ${response.status}`, response);
+                                        if (debug) infoDiv.innerHTML = `Error loading info. Status: ${response.status} (ID: ${id}, Type: ${type})`;
+                                        if (debug) infoDiv.style.display = 'block';
                                     }
                                 },
                                 onerror: function(error) {
-                                    console.error(`Error loading info:`, error);
-                                    infoDiv.innerHTML = "Error loading info.";
-                                    infoDiv.style.display = 'block';
+                                    if (debug) console.error(`Error loading info:`, error);
+                                    if (debug) infoDiv.innerHTML = "Error loading info.";
+                                    if (debug) infoDiv.style.display = 'block';
                                 }
                             });
                         }
                     } else {
-                        console.error(`Could not extract ID from href:`, href);
-                        infoDiv.innerHTML = "Could not extract ID from URL.";
-                        infoDiv.style.display = 'none';
+                        if (debug) console.error(`Could not extract ID from href:`, href);
+                        if (debug) infoDiv.innerHTML = "Could not extract ID from URL.";
+                        if (debug) infoDiv.style.display = 'block';
                     }
                 } else {
-                    console.error(`Could not find parent anchor tag for image:`, target);
-                    infoDiv.innerHTML = "Could not find link for this image.";
-                    infoDiv.style.display = 'none';
+                    if (debug) console.error(`Could not find parent anchor tag for image:`, target);
+                    if (debug) infoDiv.innerHTML = "Could not find link for this image.";
+                    if (debug) infoDiv.style.display = 'block';
                 }
             };
             img.src = imageUrl;
@@ -213,13 +215,13 @@
 
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
-        if (target.tagName !== 'IMG' || target.tagName !== 'A') {
+        if (target.tagName !== 'IMG' || target.tagName !== 'A' || target.tagName !== 'EM') {
                 closePopup();
         }
     });
     document.addEventListener('mouseout', function(event) {
         const target = event.target;
-        if (target.tagName === 'IMG' || target.tagName === 'A') {
+        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM') {
             closePopup();
         }
     });
