@@ -4,10 +4,10 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.6.2
+// @version     1.6.3
 // @description Large image with info on Hover.
 // @author      ShaggyZE
-// @match       *://*.myanimelist.net/*
+// @include     *
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
 // @run-at      document-start
 // @license     MIT; https://opensource.org/licenses/MIT
@@ -18,12 +18,19 @@
     'use strict';
 
     const largeFactor = 5.5;
-	const truncateSynopsis = 400;
+	const truncateSynopsis = 300;
     let largeImage = null;
     let infoDiv = null;
     let allData = null;
     let otherData = null;
+    const excludedUrls = /^(https?:\/\/)?myanimelist\.net\/(anime|manga)(?!\/(season|adapted)(?:\/|$))(?:\/.*)?$/;
 
+    if (excludedUrls.test(location.href)) {
+        console.log("Script excluded on this page.");
+        return;
+    }
+
+// Rest of your script code...
     function createlargeImage() {
         largeImage = document.createElement('img');
         largeImage.style.position = 'fixed';
@@ -58,11 +65,22 @@
 
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
-        if (target.tagName === 'IMG') {
+        if (target.tagName === 'IMG' || target.tagName === 'A') {
             let imageElement = target.closest('IMG');
-            let imageUrl = imageElement ? imageElement.src : 'https://shaggyze.website/images/anime/unavailable.png';
+            let imageUrl = imageElement?.src || imageElement?.dataset?.src || imageElement?.dataset?.bg;
 
-            if (!imageUrl) return;
+            if (!imageUrl) {
+                const prevSibling = imageElement?.previousElementSibling;
+                const nextSibling = imageElement?.nextElementSibling;
+
+                if (prevSibling?.tagName === 'IMG' || target.tagName === 'A') {
+                    imageUrl = prevSibling?.src || prevSibling?.dataset?.src || prevSibling?.dataset?.bg;
+                } else if (nextSibling?.tagName === 'IMG' || target.tagName === 'A') {
+                    imageUrl = nextSibling?.src || nextSibling?.dataset?.src || nextSibling?.dataset?.bg;
+                }
+            }
+
+            imageUrl = imageUrl || 'https://shaggyze.website/images/anime/transparent.png'; // Default if still no image URL
 
             if (!imageUrl.includes("/images/anime/") && !imageUrl.includes("/images/manga/")) return;
 
@@ -91,11 +109,11 @@
 
                 if (anchor && anchor.href) {
                     let href = anchor.href;
-                    let idMatch = href.match(/\/(\d+)\//);
-                    if (idMatch) {
-                        let id = idMatch[1];
-                        let type = href.includes("/anime/") ? "anime" : href.includes("/manga/") ? "manga" : null;
+                    let match = href.match(/https?:\/\/myanimelist\.net\/(anime|manga)\/(\d+)(?:\/|$)/);
+                    let type = match ? match[1] : null;
+                    let id = match ? match[2] : null;
 
+                    if (id) {
                         if (type) {
                             let apiUrl = `https://shaggyze.website/msa/info?t=${type}&id=${id}`;
                             infoDiv.innerHTML = "Loading...";
@@ -154,6 +172,8 @@
                                                 <div><b>Published:</b> ${api.data.published.start || "Unknown"} to ${api.data.published.end || "Unknown"}</div>
                                                 `;
                                             }
+                                            largeImage.src = `${api.data.cover}`;
+                                            largeImage.style.display = 'block';
                                             infoDiv.innerHTML = `${allData}<br>${otherData}<br>${synopsis}`;
                                             infoDiv.style.display = 'block';
                                             console.log(`Successfully retrieved info for ${type} ID: ${id}`, api);
@@ -179,12 +199,12 @@
                     } else {
                         console.error(`Could not extract ID from href:`, href);
                         infoDiv.innerHTML = "Could not extract ID from URL.";
-                        infoDiv.style.display = 'block';
+                        infoDiv.style.display = 'none';
                     }
                 } else {
                     console.error(`Could not find parent anchor tag for image:`, target);
                     infoDiv.innerHTML = "Could not find link for this image.";
-                    infoDiv.style.display = 'block';
+                    infoDiv.style.display = 'none';
                 }
             };
             img.src = imageUrl;
@@ -193,13 +213,13 @@
 
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
-        if (target.tagName !== 'IMG') {
-            closePopup();
+        if (target.tagName !== 'IMG' || target.tagName !== 'A') {
+                closePopup();
         }
     });
     document.addEventListener('mouseout', function(event) {
         const target = event.target;
-        if (target.tagName === 'IMG') {
+        if (target.tagName === 'IMG' || target.tagName === 'A') {
             closePopup();
         }
     });
