@@ -19,8 +19,8 @@
 
     const largeFactor = 5.5;
     const truncateSynopsis = 300;
-    const showmoreImages = false
-    let debug = false
+    const showmoreImages = false;
+    let debug = false;
     let largeImage = null;
     let infoDiv = null;
     let allData = null;
