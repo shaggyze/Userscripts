@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.6.5
+// @version     1.6.6
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @include     *
@@ -19,7 +19,8 @@
 
     const largeFactor = 5.5;
     const truncateSynopsis = 300;
-    let debug = false;
+    const showmoreImages = false
+    let debug = false
     let largeImage = null;
     let infoDiv = null;
     let allData = null;
@@ -68,14 +69,19 @@
 
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
-        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'B') {
+        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'B' || target.tagName === 'STRONG') {
             let imageElement = target.closest('IMG');
-            imageUrl = imageElement?.src || imageElement?.dataset?.src || imageElement?.dataset?.bg || 'https://shaggyze.website/images/anime/transparent.png';
+            imageUrl = imageElement?.src || imageElement?.dataset?.src || imageElement?.dataset?.bg;
             if (debug) console.log('1 ' + imageUrl);
-
-            if (!imageUrl.includes("/images/anime/") && !imageUrl.includes("/images/manga/")) return;
+            if (!imageUrl) imageUrl = 'https://shaggyze.website/images/anime/transparent.png';
             if (debug) console.log('2 ' + imageUrl)
-
+            if (showmoreImages) {
+                if (!imageUrl.includes("/images/") && !imageUrl.includes("/common/")) return;
+                if (debug) console.log('2-1 ' + imageUrl)
+            } else {
+                if (!imageUrl.includes("/images/anime/") && !imageUrl.includes("/images/manga/")) return;
+                if (debug) console.log('2-2 ' + imageUrl)
+            }
             if (!largeImage) createlargeImage();
             if (debug) console.log('3 ' + imageUrl);
 
@@ -86,8 +92,8 @@
                 largeImage.height = 60 * largeFactor;
 
                 imageUrl = imageUrl.replace(/\/r\/\d+x\d+\//, '/')
-                                   .replace(/\?s=.*$/, '')
-                                   .replace(/t\.(jpg|webp)|(\.(jpg|webp))/g, "l.jpg");
+                                   //.replace(/\?s=.*$/, '')
+                                   //.replace(/t\.(jpg|webp)|(\.(jpg|webp))/g, "l.jpg");
                 largeImage.src = imageUrl;
                 largeImage.style.display = 'block';
 
@@ -206,13 +212,13 @@
 
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
-        if (target.tagName !== 'IMG' || target.tagName !== 'A' || target.tagName !== 'EM' || target.tagName !== 'B') {
+        if (target.tagName !== 'IMG' || target.tagName !== 'A' || target.tagName !== 'EM' || target.tagName !== 'B' || target.tagName === 'STRONG') {
                 closePopup();
         }
     });
     document.addEventListener('mouseout', function(event) {
         const target = event.target;
-        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName !== 'B') {
+        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName !== 'B' || target.tagName === 'STRONG') {
             closePopup();
         }
     });
