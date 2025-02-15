@@ -4,14 +4,17 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.6.6
+// @version     1.6.7
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @include     *
 // @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
-// @run-at      document-start
-// @license     MIT; https://opensource.org/licenses/MIT
+// @run-at      document-end
+// @grant       GM_registerMenuCommand
+// @grant       GM_getValue
+// @grant       GM_setValue
 // @grant       GM_xmlhttpRequest
+// @license     MIT; https://opensource.org/licenses/MIT
 // ==/UserScript==
 
 (function() {
@@ -19,7 +22,8 @@
 
     const largeFactor = 5.5;
     const truncateSynopsis = 300;
-    const showmoreImages = false;
+    const excludedUrls = /^(https?:\/\/)?myanimelist\.net\/(anime|manga)(?!\/(season|adapted)(?:\/|$))(?:\/.*)?$/;
+    let showmoreImages = Boolean(GM_getValue("showmoreImages", false));
     let debug = false;
     let largeImage = null;
     let infoDiv = null;
@@ -27,12 +31,18 @@
     let otherData = null;
     let imageUrl = null;
 
-    const excludedUrls = /^(https?:\/\/)?myanimelist\.net\/(anime|manga)(?!\/(season|adapted)(?:\/|$))(?:\/.*)?$/;
-
     if (excludedUrls.test(location.href)) {
         console.log("Script excluded on this page.");
         return;
     }
+
+    GM_registerMenuCommand("Show More Images", function() {
+        const text = prompt("Enable more images? (true/false):");
+        GM_setValue("showmoreImages", text === "true");
+        if (text !== null && text !== "") {
+            location.reload();
+        }
+    });
 
     function createlargeImage() {
         largeImage = document.createElement('img');
@@ -69,21 +79,14 @@
 
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
-        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'B' || target.tagName === 'STRONG') {
+        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'SPAN' || target.tagName === 'DIV' || target.tagName === 'B' || target.tagName === 'STRONG') {
             let imageElement = target.closest('IMG');
-            imageUrl = imageElement?.src || imageElement?.dataset?.src || imageElement?.dataset?.bg;
+            imageUrl = imageElement?.src || target?.getAttribute('data.src') || target?.getAttribute('data-bg');
             if (debug) console.log('1 ' + imageUrl);
             if (!imageUrl) imageUrl = 'https://shaggyze.website/images/anime/transparent.png';
-            if (debug) console.log('2 ' + imageUrl)
-            if (showmoreImages) {
-                if (!imageUrl.includes("/images/") && !imageUrl.includes("/common/")) return;
-                if (debug) console.log('2-1 ' + imageUrl)
-            } else {
-                if (!imageUrl.includes("/images/anime/") && !imageUrl.includes("/images/manga/")) return;
-                if (debug) console.log('2-2 ' + imageUrl)
-            }
+            if (debug) console.log('2 ' + imageUrl);
+            imageUrl = imageUrl.replace(/\/r\/\d+x\d+\//, '/');
             if (!largeImage) createlargeImage();
-            if (debug) console.log('3 ' + imageUrl);
 
             const img = new Image();
             img.onload = function() {
@@ -91,20 +94,28 @@
                 largeImage.width = 40 * largeFactor;
                 largeImage.height = 60 * largeFactor;
 
-                imageUrl = imageUrl.replace(/\/r\/\d+x\d+\//, '/')
-                                   //.replace(/\?s=.*$/, '')
-                                   //.replace(/t\.(jpg|webp)|(\.(jpg|webp))/g, "l.jpg");
-                largeImage.src = imageUrl;
-                largeImage.style.display = 'block';
+                if (showmoreImages) {
+                    if (!imageUrl.includes("/images/") && !imageUrl.includes("/common/") && !imageUrl.includes("/ui/")) return;
+                    largeImage.src = imageUrl;
+                    largeImage.style.display = 'block';
+                    if (debug) console.log('3-1 ' + imageUrl);
+                } else {
+                    if (!imageUrl.includes("/images/anime/") && !imageUrl.includes("/images/manga/")) return;
+                    imageUrl = imageUrl.replace(/\?s=.*$/, '')
+                                       .replace(/t\.(jpg|webp)|(\.(jpg|webp))/g, "l.jpg");
+                    largeImage.src = imageUrl;
+                    largeImage.style.display = 'block';
+                    if (debug) console.log('3-2 ' + imageUrl);
+                }
 
                 if (!infoDiv) createinfoDiv();
                 if (debug) console.log('4 ' + imageUrl);
+
                 const rect = largeImage.getBoundingClientRect();
                 infoDiv.style.top = rect.top + 'px';
                 infoDiv.style.left = rect.left + rect.width + 10 + 'px';
 
                 let anchor = target.closest('a');
-
                 if (anchor && anchor.href) {
                     if (debug) console.log('5 ' + anchor.href);
                     let href = anchor.href;
@@ -212,13 +223,14 @@
 
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
-        if (target.tagName !== 'IMG' || target.tagName !== 'A' || target.tagName !== 'EM' || target.tagName !== 'B' || target.tagName === 'STRONG') {
+        if (target.tagName !== 'IMG' || target.tagName !== 'A' || target.tagName !== 'EM' || target.tagName === 'DIV' || target.tagName === 'SPAN' || target.tagName !== 'B' || target.tagName === 'STRONG') {
                 closePopup();
         }
     });
+
     document.addEventListener('mouseout', function(event) {
         const target = event.target;
-        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName !== 'B' || target.tagName === 'STRONG') {
+        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'DIV' || target.tagName === 'SPAN' || target.tagName !== 'B' || target.tagName === 'STRONG') {
             closePopup();
         }
     });
