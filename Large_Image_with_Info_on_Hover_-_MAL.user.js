@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.6.7
+// @version     1.6.8
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @include     *
@@ -24,17 +24,17 @@
     const truncateSynopsis = 300;
     const excludedUrls = /^(https?:\/\/)?myanimelist\.net\/(anime|manga)(?!\/(season|adapted)(?:\/|$))(?:\/.*)?$/;
     let showmoreImages = Boolean(GM_getValue("showmoreImages", false));
+    let onlyMALsite = true; // if true it only works on MAL.
     let debug = false;
     let largeImage = null;
     let infoDiv = null;
     let allData = null;
     let otherData = null;
     let imageUrl = null;
+    let apiUrl = null;
+    let apiJSONUrl = false; // if false it's slower, but more accurate.
 
-    if (excludedUrls.test(location.href)) {
-        console.log("Script excluded on this page.");
-        return;
-    }
+    if ((onlyMALsite === true & !location.href.includes("myanimelist.net")) && (excludedUrls.test(location.href))) {console.log("Large image with info on Hover Script excluded on this page."); return;}
 
     GM_registerMenuCommand("Show More Images", function() {
         const text = prompt("Enable more images? (true/false):");
@@ -71,14 +71,20 @@
     }
 
     function closePopup() {
-        largeImage.style.display = 'none';
-        largeImage.src = "";
-        infoDiv.style.display = 'none';
-        infoDiv.innerHTML = "";
+        if (largeImage) {
+            largeImage.style.display = 'none';
+            largeImage.src = "";
+        }
+        if (infoDiv) {
+            infoDiv.style.display = 'none';
+            infoDiv.innerHTML = "";
+        }
     }
+
 
     document.addEventListener('mouseover', function(event) {
         const target = event.target;
+        closePopup();
         if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'SPAN' || target.tagName === 'DIV' || target.tagName === 'B' || target.tagName === 'STRONG') {
             let imageElement = target.closest('IMG');
             imageUrl = imageElement?.src || target?.getAttribute('data.src') || target?.getAttribute('data-bg');
@@ -125,7 +131,12 @@
 
                     if (id) {
                         if (type) {
-                            let apiUrl = `https://shaggyze.website/msa/info?t=${type}&id=${id}`;
+							if (apiJSONUrl) {
+							    let subDirectory = Math.floor(id / 10000);
+							    apiUrl = `https://shaggyze.website/info/${type}/${subDirectory}/${id}.json`;
+							} else {
+                                apiUrl = `https://shaggyze.website/msa/info?t=${type}&id=${id}`;
+							}
                             infoDiv.innerHTML = "Loading...";
                             infoDiv.style.display = 'block';
 
@@ -194,7 +205,8 @@
                                         }
 
                                     } else {
-                                        if (debug) console.error(`Error loading info for ${type} ID: ${id}. Status: ${response.status}`, response);
+										if (apiJSONUrl === true) {apiJSONUrl = false};
+                                        if (debug) console.error(`Error loading info for ${type} ID: ${id}. Status: ${response.status} apiUrl: ${apiUrl}`, response);
                                         if (debug) infoDiv.innerHTML = `Error loading info. Status: ${response.status} (ID: ${id}, Type: ${type})`;
                                         if (debug) infoDiv.style.display = 'block';
                                     }
@@ -221,18 +233,9 @@
         }
     });
 
-    document.addEventListener('mouseover', function(event) {
-        const target = event.target;
-        if (target.tagName !== 'IMG' || target.tagName !== 'A' || target.tagName !== 'EM' || target.tagName === 'DIV' || target.tagName === 'SPAN' || target.tagName !== 'B' || target.tagName === 'STRONG') {
-                closePopup();
-        }
-    });
-
     document.addEventListener('mouseout', function(event) {
         const target = event.target;
-        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'DIV' || target.tagName === 'SPAN' || target.tagName !== 'B' || target.tagName === 'STRONG') {
-            closePopup();
-        }
+        closePopup();
     });
 
 })();
