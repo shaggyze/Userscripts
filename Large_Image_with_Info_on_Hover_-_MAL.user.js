@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.6.8
+// @version     1.6.9
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @include     *
@@ -34,7 +34,7 @@
     let apiUrl = null;
     let apiJSONUrl = false; // if false it's slower, but more accurate.
 
-    if ((onlyMALsite === true & !location.href.includes("myanimelist.net")) && (excludedUrls.test(location.href))) {console.log("Large image with info on Hover Script excluded on this page."); return;}
+    if ((onlyMALsite === true & !location.href.includes("myanimelist.net")) || (excludedUrls.test(location.href))) {console.log("Large image with info on Hover Script excluded on this page."); return;}
 
     GM_registerMenuCommand("Show More Images", function() {
         const text = prompt("Enable more images? (true/false):");
