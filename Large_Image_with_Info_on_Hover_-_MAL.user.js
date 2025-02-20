@@ -22,10 +22,10 @@
 
     const largeFactor = 5.5; // multiplies largeImage size.
     const truncateSynopsis = 300; // synopsis character limit.
-    let showmoreImages = Boolean(GM_getValue("showmoreImages", false)); // if true shows common/ui images not just anime/manga.
-    let debug = true; // if true debug info in console F12, set showinfoDiv = true.
-    let showinfoDiv = false; // if true will show anime/manga info from api.
-    let onlyMALsite = false; // if true it only works on MAL's website.
+    let showmoreImages = Boolean(GM_getValue("showmoreImages", false)); // shows more common/ui images not just anime/manga.
+    let debug = false; // shows debug info in console F12, set showinfoDiv = true.
+    let showinfoDiv = true; // if true will show anime/manga info from api.
+    let onlyMALsite = true; // if true it only works on MAL's website.
     let apiJSONUrl = false; // if false it's slower, but more accurate.
     const excludedUrls = /^(https?:\/\/)?myanimelist\.net\/(anime|manga)(?!\/(season|adapted)(?:\/|$))(?:\/.*)?$/;
     let apiUrl = null;
