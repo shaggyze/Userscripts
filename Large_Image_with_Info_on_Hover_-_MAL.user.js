@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.7.0
+// @version     1.7.1
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @include     *
@@ -31,9 +31,11 @@
     let apiUrl = null;
     let largeImage = null;
     let infoDiv = null;
+    let imageUrl = null;
+    let id = null;
+    let type = null;
     let allData = null;
     let otherData = null;
-    let imageUrl = null;
 
     if ((onlyMALsite === true & !location.href.includes("myanimelist.net")) || (excludedUrls.test(location.href))) {console.log("Large image with info on Hover Script excluded on this page."); return;}
 
@@ -124,12 +126,12 @@
                     }
 
                     allData = `
-                    <div><b>English Title:</b> ${api.data.title_english || "Unknown"}</div>
+                    <div><b>Title:</b> ${api.data.title || "Unknown"}</div>
+                    <div><b>English:</b> ${api.data.title_english || "Unknown"}</div>
                     <div><b>Score:</b> ${api.data.score || "Unknown"}</div>
                     `;
                     if (type == 'anime') {
                         otherData = `
-                        <div><b>Source:</b> ${api.data.source || "Unknown"}</div>
                         <div><b>Broadcast:</b> ${api.data.broadcast || "Unknown"}</div>
                         <div><b>Episodes:</b> ${api.data.episodes || "Unknown"}</div>
                         <div><b>Studios:</b> ${studioNames}</div>
@@ -138,7 +140,6 @@
                                                 `;
                     } else {
                         otherData = `
-                        <div><b>Type:</b> ${api.data.type || "Unknown"}</div>
                         <div><b>Volumes:</b> ${api.data.volumes || "Unknown"}</div>
                         <div><b>Chapters:</b> ${api.data.chapters || "Unknown"}</div>
                         <div><b>Serialization:</b> ${serializationNames}</div>
@@ -147,7 +148,7 @@
                     }
                     largeImage.src = `${api.data.cover}`;
                     largeImage.style.display = 'block';
-                    infoDiv.innerHTML = `${allData}<br>${otherData}<br>${synopsis}`;
+                    infoDiv.innerHTML = `${allData}<br><div><b>Type:</b> ${api.data.type || "Unknown"}</div>${otherData}<br>${synopsis}`;
                     if (showinfoDiv) infoDiv.style.display = 'block';
                     if (debug) console.log(`Successfully retrieved info for ${type} ID: ${id}`, api);
                 } catch (error) {
@@ -170,53 +171,7 @@
     });
     }
 
-    document.addEventListener('mouseover', function(event) {
-        const target = event.target;
-        closePopup();
-        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'SPAN' || target.tagName === 'DIV' || target.tagName === 'B' || target.tagName === 'I' || target.tagName === 'STRONG') {
-            let imageElement = target.closest('IMG');
-            imageUrl = imageElement?.src || target?.getAttribute('data.src') || target?.getAttribute('data-bg');
-            if (debug) console.log('1 ' + imageUrl);
-            if (!imageUrl) imageUrl = 'https://shaggyze.website/images/anime/transparent.png';
-            if (debug) console.log('2 ' + imageUrl);
-            imageUrl = imageUrl.replace(/\/r\/\d+x\d+\//, '/');
-            if (imageUrl.includes("/images/anime/") || imageUrl.includes("/images/manga/")) imageUrl = imageUrl.replace(/t\.(jpg|webp)|(\.(jpg|webp))/g, "l.jpg").replace(/\?s=.*$/, '');
-            if (!largeImage) createlargeImage();
-            if (debug) console.log('3 ' + imageUrl);
-            const img = new Image();
-            img.onload = function() {
-
-                if (showmoreImages) {
-                    if (!imageUrl.includes("myanimelist.net/images/") && !imageUrl.includes("shaggyze.website/images/") &&!imageUrl.includes("myanimelist.net/s/common/") && !imageUrl.includes("myanimelist.net/ui/")) return;
-                } else {
-                    if (!imageUrl.includes("/images/anime/") && !imageUrl.includes("/images/manga/")) return;
-                }
-                largeImage.width = 40 * largeFactor;
-                largeImage.height = 60 * largeFactor;
-                largeImage.src = imageUrl;
-                largeImage.style.display = 'block';
-
-                if (!infoDiv) createinfoDiv();
-                if (debug) console.log('4 ' + imageUrl);
-
-                const rect = largeImage.getBoundingClientRect();
-                infoDiv.style.top = rect.top + 'px';
-                infoDiv.style.left = rect.left + rect.width + 10 + 'px';
-
-                let anchor = target.closest('a');
-                if (anchor && anchor.href) {
-                    if (debug) console.log('5 ' + anchor.href);
-                    let href = anchor.href;
-                    let match = href.match(/https?:\/\/myanimelist\.net\/(anime|manga)\/(\d+)(?:\/|$)/);
-                    let type = match ? match[1] : null;
-                    let id = match ? match[2] : null;
-
-                    if (id) {
-                        parseApi(id, type);
-                    } else {
-                        if (debug) console.error(`Could not extract ID from href:`, href);
-                        if (debug) infoDiv.innerHTML = "Could not extract ID from URL.";
-                        if (debug & showinfoDiv) infoDiv.style.display = 'block';
+    function parseJson() {
                         apiUrl = `https://shaggyze.website/info/reversecover.json`;
                         GM_xmlhttpRequest({
                             method: 'GET',
@@ -246,11 +201,62 @@
                                 if (debug & showinfoDiv) infoDiv.style.display = 'block';
                             }
                         });
+    }
+
+    document.addEventListener('mouseover', function(event) {
+        const target = event.target;
+        closePopup();
+        if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'SPAN' || target.tagName === 'DIV' || target.tagName === 'B' || target.tagName === 'I' || target.tagName === 'STRONG') {
+            let imageElement = target.closest('IMG');
+            imageUrl = imageElement?.src || target?.getAttribute('data.src') || target?.getAttribute('data-bg');
+            if (debug) console.log('1 ' + imageUrl);
+            if (!imageUrl) imageUrl = 'https://shaggyze.website/images/anime/transparent.png';
+            if (debug) console.log('2 ' + imageUrl);
+            imageUrl = imageUrl.replace(/\/r\/\d+x\d+\//, '/')
+            if (imageUrl.includes("/images/anime/") || imageUrl.includes("/images/manga/")) imageUrl = imageUrl.replace(/t\.(jpg|webp)|(\.(jpg|webp))/g, "l.jpg").replace(/\?s=.*$/, '');
+            if (!largeImage) createlargeImage();
+            if (debug) console.log('3 ' + imageUrl);
+            const img = new Image();
+            img.onload = function() {
+
+                if (showmoreImages) {
+                    if (!imageUrl.includes("myanimelist.net/images/") && !imageUrl.includes("shaggyze.website/images/") &&!imageUrl.includes("myanimelist.net/s/common/") && !imageUrl.includes("myanimelist.net/ui/")) return;
+                } else {
+                    if (!imageUrl.includes("/images/anime/") && !imageUrl.includes("/images/manga/")) return;
+                }
+                largeImage.width = 40 * largeFactor;
+                largeImage.height = 60 * largeFactor;
+                largeImage.src = imageUrl;
+                largeImage.style.display = 'block';
+
+                if (!infoDiv) createinfoDiv();
+                if (debug) console.log('4 ' + imageUrl);
+
+                const rect = largeImage.getBoundingClientRect();
+                infoDiv.style.top = rect.top + 'px';
+                infoDiv.style.left = rect.left + rect.width + 10 + 'px';
+
+                let anchor = target.closest('a');
+                if (anchor && anchor.href) {
+                    if (debug) console.log('5 ' + anchor.href);
+                    let href = anchor.href;
+                    let match = href.match(/https?:\/\/myanimelist\.net\/(anime|manga)\/(\d+)(?:\/|$)/);
+                    type = match ? match[1] : null;
+                    id = match ? match[2] : null;
+
+                    if (id) {
+                        parseApi(id, type);
+                    } else {
+                        if (debug) console.error(`Could not extract ID from href:`, href);
+                        if (debug) infoDiv.innerHTML = "Could not extract ID from URL.";
+                        if (debug & showinfoDiv) infoDiv.style.display = 'block';
+                        parseJson();
                     }
                 } else {
                     if (debug) console.error(`Could not find parent anchor tag for image:`, target);
                     if (debug) infoDiv.innerHTML = "Could not find link for this image.";
                     if (debug & showinfoDiv) infoDiv.style.display = 'block';
+                    parseJson();
                 }
             };
             img.src = imageUrl;
