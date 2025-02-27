@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.7.1
+// @version     1.7.2
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @include     *
@@ -21,13 +21,13 @@
     'use strict';
 
     const largeFactor = 5.5; // multiplies largeImage size.
-    const truncateSynopsis = 300; // synopsis character limit.
+    const truncateSynopsis = 200; // synopsis character limit.
     let showmoreImages = Boolean(GM_getValue("showmoreImages", false)); // shows more common/ui images not just anime/manga.
     let debug = false; // shows debug info in console F12, set showinfoDiv = true.
     let showinfoDiv = true; // if true will show anime/manga info from api.
-    let onlyMALsite = true; // if true it only works on MAL's website.
+    let onlyMALsite = Boolean(GM_getValue("onlyMALsite", true)); // if true it only works on MAL's website.
     let apiJSONUrl = false; // if false it's slower, but more accurate.
-    const excludedUrls = /^(https?:\/\/)?myanimelist\.net\/(anime|manga)(?!\/(season|adapted)(?:\/|$))(?:\/.*)?$/;
+    const excludedUrls = /^(https?:\/\/)?myanimelist\.net\/(anime|manga)(?!\/(season|adapted|genre|.*\/userrecs|.*\/stacks|.*\/pics)(?:\/|$))(?:\/.*)?$/;
     let apiUrl = null;
     let largeImage = null;
     let infoDiv = null;
@@ -42,6 +42,14 @@
     GM_registerMenuCommand("Show More Images", function() {
         const text = prompt("Enable more images? (true/false):");
         GM_setValue("showmoreImages", text === "true");
+        if (text !== null && text !== "") {
+            location.reload();
+        }
+    });
+
+    GM_registerMenuCommand("Only MAL Site", function() {
+        const text = prompt("Enable only on MAL? (true/false):");
+        GM_setValue("onlyMALsite", text === "true");
         if (text !== null && text !== "") {
             location.reload();
         }
@@ -146,7 +154,7 @@
                         <div><b>Published:</b> ${api.data.published.start || "Unknown"} to ${api.data.published.end || "Unknown"}</div>
                         `;
                     }
-                    largeImage.src = `${api.data.cover}`;
+                    if (imageUrl == 'https://shaggyze.website/images/anime/transparent.png') largeImage.src = `${api.data.cover}`;
                     largeImage.style.display = 'block';
                     infoDiv.innerHTML = `${allData}<br><div><b>Type:</b> ${api.data.type || "Unknown"}</div>${otherData}<br>${synopsis}`;
                     if (showinfoDiv) infoDiv.style.display = 'block';
@@ -172,35 +180,36 @@
     }
 
     function parseJson() {
-                        apiUrl = `https://shaggyze.website/info/reversecover.json`;
-                        GM_xmlhttpRequest({
-                            method: 'GET',
-                            url: apiUrl,
-                            onload: function(response) {
-                                if (response.status === 200) {
-                                    try {
-                                        let api = JSON.parse(response.responseText);
-                                        id = api[imageUrl]?.id || null;
-                                        type = api[imageUrl]?.type || null;
-                                        if (id) parseApi(id, type);
-                                    } catch (error) {
-                                        if (debug) console.error("Error parsing JSON response:", error, response.responseText);
-                                        if (debug) infoDiv.innerHTML = `Error parsing JSON. (ID: ${id}, Type: ${type})`;
-                                        if (debug & showinfoDiv) infoDiv.style.display = 'block';
-                                    }
-                                } else {
-								    if (apiJSONUrl === true) {apiJSONUrl = false};
-                                    if (debug) console.error(`Error loading info for ${type} ID: ${id}. Status: ${response.status} apiUrl: ${apiUrl}`, response);
-                                    if (debug) infoDiv.innerHTML = `Error loading info. Status: ${response.status} (ID: ${id}, Type: ${type})`;
-                                    if (debug & showinfoDiv) infoDiv.style.display = 'block';
-                                }
-                            },
-                            onerror: function(error) {
-                                if (debug) console.error(`Error loading info:`, error);
-                                if (debug) infoDiv.innerHTML = "Error loading info.";
-                                if (debug & showinfoDiv) infoDiv.style.display = 'block';
-                            }
-                        });
+    apiUrl = `https://shaggyze.website/info/reversecover.json`;
+    GM_xmlhttpRequest({
+        method: 'GET',
+        url: apiUrl,
+        onload: function(response) {
+            if (response.status === 200) {
+                try {
+                    let api = JSON.parse(response.responseText);
+                    id = api[imageUrl]?.id || null;
+                    type = api[imageUrl]?.type || null;
+                    if (debug) console.log(`loading info for ${type} ID: ${id}. Status: ${response.status} apiUrl: ${apiUrl}`, response);
+                    if (id) parseApi(id, type);
+                } catch (error) {
+                    if (debug) console.error("Error parsing JSON response:", error, response.responseText);
+                    if (debug) infoDiv.innerHTML = `Error parsing JSON. (ID: ${id}, Type: ${type})`;
+                    if (debug & showinfoDiv) infoDiv.style.display = 'block';
+                }
+            } else {
+			    if (apiJSONUrl === true) {apiJSONUrl = false};
+                if (debug) console.error(`Error loading info for ${type} ID: ${id}. Status: ${response.status} apiUrl: ${apiUrl}`, response);
+                if (debug) infoDiv.innerHTML = `Error loading info. Status: ${response.status} (ID: ${id}, Type: ${type})`;
+                if (debug & showinfoDiv) infoDiv.style.display = 'block';
+            }
+        },
+        onerror: function(error) {
+            if (debug) console.error(`Error loading info:`, error);
+            if (debug) infoDiv.innerHTML = "Error loading info.";
+            if (debug & showinfoDiv) infoDiv.style.display = 'block';
+        }
+    });
     }
 
     document.addEventListener('mouseover', function(event) {
@@ -213,7 +222,7 @@
             if (!imageUrl) imageUrl = 'https://shaggyze.website/images/anime/transparent.png';
             if (debug) console.log('2 ' + imageUrl);
             imageUrl = imageUrl.replace(/\/r\/\d+x\d+\//, '/')
-            if (imageUrl.includes("/images/anime/") || imageUrl.includes("/images/manga/")) imageUrl = imageUrl.replace(/t\.(jpg|webp)|(\.(jpg|webp))/g, "l.jpg").replace(/\?s=.*$/, '');
+            if (imageUrl.includes("/images/anime/") || imageUrl.includes("/images/manga/")) imageUrl = imageUrl.replace(/(t|l)\.(jpg|webp)|(\.(jpg|webp))/g, "l.jpg").replace(/\?s=.*$/, '');
             if (!largeImage) createlargeImage();
             if (debug) console.log('3 ' + imageUrl);
             const img = new Image();
