@@ -4,11 +4,11 @@
 // @updateURL    https://openuserjs.org/meta/shaggyze/Remove_Video_Buttons_-_MAL.meta.js
 // @downloadURL  https://openuserjs.org/install/shaggyze/Remove_Video_Buttons_-_MAL.user.js
 // @copyright    2022, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version      0.9
+// @version      1.0
 // @description  Remove Video Buttons on MAL
 // @author       ShaggyZE
 // @match        https://myanimelist.net/*
-// @icon         https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
+// @icon         https://shaggyze.website/MAL.png
 // @run-at       document-end
 // @grant        none
 // @license      MIT; https://opensource.org/licenses/MIT

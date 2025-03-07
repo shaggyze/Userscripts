@@ -4,12 +4,12 @@
 // @updateURL    https://openuserjs.org/meta/shaggyze/Remove_Gift_Buttons_-_MAL.meta.js
 // @downloadURL  https://openuserjs.org/install/shaggyze/Remove_Gift_Buttons_-_MAL.user.js
 // @copyright    2022, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version      0.3
+// @version      0.4
 // @description  Remove Gift Buttons on MAL
 // @author       ShaggyZE
 // @match        *://myanimelist.net/*
 // @exclude      *://myanimelist.net/account/membership/*
-// @icon         https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
+// @icon         https://shaggyze.website/MAL.png
 // @run-at       document-begin
 // @grant        none
 // @license      MIT; https://opensource.org/licenses/MIT

@@ -4,11 +4,11 @@
 // @updateURL    https://openuserjs.org/meta/shaggyze/Move_Pinned_in_Seasonal_Anime_-_MAL.meta.js
 // @downloadURL  https://openuserjs.org/install/shaggyze/Move_Pinned_in_Seasonal_Anime_-_MAL.user.js
 // @copyright    2022, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version      0.1
+// @version      0.2
 // @description  Move Pinned in Seasonal Anime
 // @author       ShaggyZE
 // @match        https://myanimelist.net/anime/season*
-// @icon         https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
+// @icon         https://shaggyze.website/MAL.png
 // @run-at       document-end
 // @license      MIT; https://opensource.org/licenses/MIT
 // ==/UserScript==

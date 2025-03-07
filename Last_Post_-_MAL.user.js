@@ -4,11 +4,11 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Last_Post_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Last_Post_-_MAL.user.js
 // @copyright   2022, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     2.0
+// @version     2.1
 // @description Add Last Post link to MAL Forum Topics and Notifications.
 // @author      ShaggyZE & hacker09
 // @match       *://myanimelist.net/*
-// @icon        https://dl.dropboxusercontent.com/s/yics96pcxixujd1/MAL.png
+// @icon        https://shaggyze.website/MAL.png
 // @run-at      document-end
 // @license     MIT; https://opensource.org/licenses/MIT
 // ==/UserScript==
@@ -23,7 +23,7 @@ var TimesExecuted;
     }
     else if (href.match(/topicid/) !==null) {
         href=href.replace(/\#.*/, '');
-        document.querySelector("div.mal-btn-toolbar").insertAdjacentHTML('beforeEnd', `<button class="mal-btn small outline" style="cursor: pointer;" onclick='[...document.querySelectorAll("button.mal-btn.secondary.outline.noborder.js-topic-top")].pop().scrollIntoView()'>Bottom</button>`); //Add the Bottom button before first post of current page.
+        document.querySelector("div.mal-btn-toolbar").insertAdjacentHTML('beforeEnd', `<button class="mal-btn small secondary outline noborder" onclick="window.scrollTo(0, document.body.scrollHeight);"><i class="fa-solid fa-fw fa-arrow-down mr4"></i>Bottom</button>`); //Add the Bottom button before first post of current page.
         document.querySelector("div.pages").insertAdjacentHTML('beforeEnd', `&nbsp;<a style="cursor: pointer;" href="` + href + `&goto=lastpost">Last Post »»</a>`); //Add the Last Post link before first post of current page.
         document.querySelector("#contentWrapper").insertAdjacentHTML('beforeEnd', `<br><a style="float: right; cursor: pointer;" href="` + href + `&goto=lastpost">Last Post »»</a>`); //Add the Last Post link after last post of current page.
     }
