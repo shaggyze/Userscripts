@@ -14,6 +14,7 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_xmlhttpRequest
+// @connect     shaggyze.website
 // @license     MIT; https://opensource.org/licenses/MIT
 // ==/UserScript==
 
