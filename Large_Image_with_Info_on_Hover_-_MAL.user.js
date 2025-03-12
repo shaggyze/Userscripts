@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.7.3
+// @version     1.7.4
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @include     *
@@ -17,16 +17,19 @@
 // @license     MIT; https://opensource.org/licenses/MIT
 // ==/UserScript==
 
+/* jshint esversion: 11 */
+
 (function () {
   'use strict';
 
   const largeFactor = 5.5; // multiplies largeImage size.
   const truncateSynopsis = 200; // synopsis character limit.
-  let showmoreImages = Boolean(GM_getValue("showmoreImages", false)); // shows more common/ui images not just anime/manga.
+  let showmoreImages = GM_getValue("showmoreImages", false); // shows more common/ui images not just anime/manga.
   let debug = false; // shows debug info in console F12, force showinfoDiv = true.
-  let showinfoDiv = true; // if true will show anime/manga info from api.
-  let onlyMALsite = Boolean(GM_getValue("onlyMALsite", true)); // if true it only works on MAL's website.
+  let showinfoDiv = GM_getValue("showinfoDiv", true); // if true will show anime/manga info from api.
+  let onlyMALsite = GM_getValue("onlyMALsite", true); // if true it only works on MAL's website.
   let apiJSONUrl = false; // if false it's slower, but more accurate.
+  let followMouse = GM_getValue("followMouse", false); // if true largeImage and infoDiv follow mouse..
   const excludedUrls = /^(https?:\/\/)?myanimelist\.net\/(anime|manga)(?!\/(season|adapted|genre|.*\/userrecs|.*\/stacks|.*\/pics)(?:\/|$))(?:\/.*)?$/;
   let apiUrl = null;
   let largeImage = null;
@@ -37,44 +40,56 @@
   let allData = null;
   let otherData = null;
 
+  GM_registerMenuCommand(`${onlyMALsite ? "Disable" : "Enable"} Only MAL Site`, function() { GM_setValue("onlyMALsite", !onlyMALsite); location.reload(); });
+
   if ((onlyMALsite === true & !location.href.includes("myanimelist.net")) || (excludedUrls.test(location.href))) {
     console.log("Large image with info on Hover Script excluded on this page.");
     return;
   }
   if (debug) showinfoDiv = true;
-
-  GM_registerMenuCommand("Show More Images", function () {
-    const text = prompt("Enable more images? (true/false):");
-    GM_setValue("showmoreImages", text === "true");
-    if (text !== null && text !== "") {
-      location.reload();
-    }
-  });
-
-  GM_registerMenuCommand("Only MAL Site", function () {
-    const text = prompt("Enable only on MAL? (true/false):");
-    GM_setValue("onlyMALsite", text === "true");
-    if (text !== null && text !== "") {
-      location.reload();
-    }
-  });
+  GM_registerMenuCommand(`${showmoreImages ? "Disable" : "Enable"} Show More Images`, function() { GM_setValue("showmoreImages", !showmoreImages); location.reload(); });
+  GM_registerMenuCommand(`${followMouse ? "Disable" : "Enable"} Follow Mouse`, function() { GM_setValue("followMouse", !followMouse); location.reload(); });
+  GM_registerMenuCommand(`${showinfoDiv ? "Disable" : "Enable"} Show Info Div`, function() { GM_setValue("showinfoDiv", !showinfoDiv); location.reload(); });
 
   function createlargeImage() {
     largeImage = document.createElement('img');
-    largeImage.style.position = 'fixed';
-    largeImage.style.top = '10px';
-    largeImage.style.left = '10px';
+    if (followMouse === false) {
+      largeImage.style.position = 'fixed';
+      largeImage.style.top = '10px';
+      largeImage.style.left = '10px';
+    } else {
+      largeImage.style.position = 'absolute';
+      largeImage.style.pointerEvents = 'none';
+    }
     largeImage.style.maxWidth = '75%';
     largeImage.style.maxHeight = '75%';
     largeImage.style.zIndex = '9999';
     largeImage.style.display = 'none';
     largeImage.src = imageUrl;
     document.body.appendChild(largeImage);
+
+    if (followMouse === true) {
+      document.addEventListener('mousemove', function (event) {
+      if (largeImage.style.display === 'block') {
+        largeImage.style.top = event.clientY + window.scrollY + 10 + 'px';
+        largeImage.style.left = event.clientX + window.scrollX + 10 + 'px';
+      if (infoDiv.style.display === 'block') {
+        infoDiv.style.top = event.clientY + window.scrollY + 10 + 'px';
+        infoDiv.style.left = event.clientX + window.scrollX + (40 * largeFactor) + 20 + 'px';
+      }
+      }
+      });
+    }
   }
 
   function createinfoDiv() {
     infoDiv = document.createElement('div');
-    infoDiv.style.position = 'fixed';
+    if (followMouse === false) {
+      infoDiv.style.position = 'fixed';
+    } else {
+      infoDiv.style.position = 'absolute';
+      infoDiv.style.pointerEvents = 'none';
+    }
     infoDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
     infoDiv.style.color = 'white';
     infoDiv.style.textAlign = 'left';
@@ -245,7 +260,7 @@
       const img = new Image();
       img.onload = function () {
 
-        if (showmoreImages) {
+        if (showmoreImages === true) {
           if (!imageUrl.includes("myanimelist.net/images/") && !imageUrl.includes("shaggyze.website/images/") && !imageUrl.includes("myanimelist.net/s/common/") && !imageUrl.includes("myanimelist.net/ui/")) return;
         }
         else {
