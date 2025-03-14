@@ -108,8 +108,8 @@
       largeImage.style.position = 'absolute';
       largeImage.style.pointerEvents = 'none';
     }
-    largeImage.style.maxWidth = '75%';
-    largeImage.style.maxHeight = '75%';
+    largeImage.style.maxWidth = '100%';
+    largeImage.style.maxHeight = '100%';
     largeImage.style.zIndex = '9999';
     largeImage.style.border = '0';
     largeImage.alt = '*';
@@ -326,7 +326,7 @@
           if (!imageUrl.includes("/images/anime/") && !imageUrl.includes("/images/manga/")) return;
         }
         largeImage.width = 40 * largeFactor;
-        largeImage.height = 60 * largeFactor;
+        largeImage.height = 55 * largeFactor;
         if (isBlacklisted(username)) {
           console.log(`User ${username} is blacklisted. Large image script disabled.`);
         } else {
