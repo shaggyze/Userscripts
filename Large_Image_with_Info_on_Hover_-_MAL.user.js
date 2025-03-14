@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.7.5
+// @version     1.7.6
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @include     *
@@ -110,8 +110,7 @@
       largeImage.style.position = 'absolute';
       largeImage.style.pointerEvents = 'none';
     }
-    largeImage.style.maxWidth = '100%';
-    largeImage.style.maxHeight = '100%';
+    largeImage.style.objectFit = 'cover';
     largeImage.style.zIndex = '9999';
     largeImage.style.border = '0';
     largeImage.alt = '*';
