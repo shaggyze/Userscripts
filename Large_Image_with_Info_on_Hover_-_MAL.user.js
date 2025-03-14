@@ -41,7 +41,7 @@
   let allData = null;
   let otherData = null;
   const usernameMatch = location.pathname.match(/\/animelist\/([^\/]+)|\/mangalist\/([^\/]+)/);
-  const username = usernameMatch[1] || usernameMatch[2];
+  const username = usernameMatch ? (usernameMatch[1] || usernameMatch[2] || null) : null;
 
   GM_registerMenuCommand(`${onlyMALsite ? "Disable" : "Enable"} Only MAL Site`, function() { GM_setValue("onlyMALsite", !onlyMALsite); location.reload(); });
 
