@@ -4,12 +4,12 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.7.6
+// @version     1.7.7
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @include     *
 // @icon        https://shaggyze.website/MAL.png
-// @run-at      document-end
+// @run-at      document-idle
 // @grant       GM_registerMenuCommand
 // @grant       GM_getValue
 // @grant       GM_setValue
@@ -40,12 +40,16 @@
   let type = null;
   let allData = null;
   let otherData = null;
+  let username = null;
+  let headerInfo = null;
+  let linkAdded = false;
   const usernameMatch = location.pathname.match(/\/animelist\/([^\/]+)|\/mangalist\/([^\/]+)/);
-  const username = usernameMatch ? (usernameMatch[1] || usernameMatch[2] || null) : null;
+  if (!username) username = usernameMatch ? (usernameMatch[1] || usernameMatch[2] || null) : null;
+  if (debug) console.log(`Username: ${username}`);
 
   GM_registerMenuCommand(`${onlyMALsite ? "Disable" : "Enable"} Only MAL Site`, function() { GM_setValue("onlyMALsite", !onlyMALsite); location.reload(); });
 
-  if ((onlyMALsite === true & !location.href.includes("myanimelist.net")) || (excludedUrls.test(location.href))) {
+  if ((onlyMALsite === true & !location.href.includes("myanimelist.net")) && (excludedUrls.test(location.href))) {
     console.log("Large image with info on Hover Script excluded on this page.");
     return;
   }
@@ -76,11 +80,13 @@
         saveBlacklist(blacklist);
     }
 
-    function addBlacklistLink() {
-        const headerInfo = document.querySelector(".btn-menu");
-
-        if (headerInfo & username) {
-
+function addBlacklistLink() {
+    if (!headerInfo) headerInfo = document.querySelector(".btn-menu");
+    username = location.pathname.match(/\/animelist\/([^\/]+)|\/mangalist\/([^\/]+)/) ? (location.pathname.match(/\/animelist\/([^\/]+)|\/mangalist\/([^\/]+)/)[1] || location.pathname.match(/\/animelist\/([^\/]+)|\/mangalist\/([^\/]+)/)[2] || null) : null;
+    console.log("headerInfo:", headerInfo);
+    console.log("username:", username);
+    if (headerInfo && username && !linkAdded) { // Check the flag.
+        console.log("adding link");
         const link = document.createElement("a");
         link.style.color = "black";
         link.style.marginLeft = "10px";
@@ -95,10 +101,22 @@
         });
 
         headerInfo.appendChild(link);
-        }
+        linkAdded = true; // Set the flag.
     }
+}
 
-    addBlacklistLink();
+const observer = new MutationObserver(function(mutations) {
+    if (document.querySelector(".btn-menu")) {
+        headerInfo = document.querySelector(".btn-menu");
+        addBlacklistLink();
+    } else {
+        headerInfo = null;
+        linkAdded = false; //reset the flag.
+        addBlacklistLink();
+    }
+});
+
+observer.observe(document.body, { childList: true, subtree: true });
 
   function createlargeImage() {
     largeImage = document.createElement('img');
@@ -113,7 +131,7 @@
     largeImage.style.objectFit = 'cover';
     largeImage.style.zIndex = '9999';
     largeImage.style.border = '0';
-    largeImage.alt = '*';
+    largeImage.alt = ' ';
         largeImage.src = imageUrl;
     document.body.appendChild(largeImage);
 
@@ -305,7 +323,7 @@
   document.addEventListener('mouseover', function (event) {
     const target = event.target;
     closePopup();
-    if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'SPAN' || target.tagName === 'TBODY' || target.tagName === 'DIV' || target.tagName === 'B' || target.tagName === 'I' || target.tagName === 'STRONG') {
+    if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'SPAN' || target.tagName === 'TD' || target.tagName === 'DIV' || target.tagName === 'B' || target.tagName === 'I' || target.tagName === 'STRONG') {
       let imageElement = target.closest('IMG');
       if (isBlacklisted(username)) {
         console.log(`User ${username} is blacklisted. Large image script disabled.`);
@@ -324,7 +342,7 @@
       img.onload = function () {
 
         if (showmoreImages === true) {
-          if (!imageUrl.includes("myanimelist.net/images/") && !imageUrl.includes("shaggyze.website/images/") && !imageUrl.includes("myanimelist.net/s/common/") && !imageUrl.includes("myanimelist.net/ui/")) return;
+          if (!imageUrl.includes("myanimelist.net/images/") && !imageUrl.includes("shaggyze.website/images/") && !imageUrl.includes("myanimelist.net/s/common/") && !imageUrl.includes("myanimelist.net/ui/") && !imageUrl.includes("myanimelist.net/signature/")) return;
         }
         else {
           if (!imageUrl.includes("/images/anime/") && !imageUrl.includes("/images/manga/")) return;
