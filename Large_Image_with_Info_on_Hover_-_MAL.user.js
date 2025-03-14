@@ -78,7 +78,8 @@
 
     function addBlacklistLink() {
         const headerInfo = document.querySelector(".btn-menu");
-        if (!headerInfo) return;
+
+        if (headerInfo & username) {
 
         const link = document.createElement("a");
         link.style.color = "black";
@@ -94,6 +95,7 @@
         });
 
         headerInfo.appendChild(link);
+        }
     }
 
     addBlacklistLink();
