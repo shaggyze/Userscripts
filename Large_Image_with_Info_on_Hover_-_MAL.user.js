@@ -43,13 +43,10 @@
   let username = null;
   let headerInfo = null;
   let linkAdded = false;
-  const usernameMatch = location.pathname.match(/\/animelist\/([^\/]+)|\/mangalist\/([^\/]+)/);
-  if (!username) username = usernameMatch ? (usernameMatch[1] || usernameMatch[2] || null) : null;
-  if (debug) console.log(`Username: ${username}`);
 
   GM_registerMenuCommand(`${onlyMALsite ? "Disable" : "Enable"} Only MAL Site`, function() { GM_setValue("onlyMALsite", !onlyMALsite); location.reload(); });
 
-  if ((onlyMALsite === true & !location.href.includes("myanimelist.net")) && (excludedUrls.test(location.href))) {
+  if ((onlyMALsite === true & !location.href.includes("myanimelist.net")) || (excludedUrls.test(location.href))) {
     console.log("Large image with info on Hover Script excluded on this page.");
     return;
   }
@@ -83,10 +80,8 @@
 function addBlacklistLink() {
     if (!headerInfo) headerInfo = document.querySelector(".btn-menu");
     username = location.pathname.match(/\/animelist\/([^\/]+)|\/mangalist\/([^\/]+)/) ? (location.pathname.match(/\/animelist\/([^\/]+)|\/mangalist\/([^\/]+)/)[1] || location.pathname.match(/\/animelist\/([^\/]+)|\/mangalist\/([^\/]+)/)[2] || null) : null;
-    console.log("headerInfo:", headerInfo);
-    console.log("username:", username);
-    if (headerInfo && username && !linkAdded) { // Check the flag.
-        console.log("adding link");
+
+    if (headerInfo && username && !linkAdded) {
         const link = document.createElement("a");
         link.style.color = "black";
         link.style.marginLeft = "10px";
@@ -101,7 +96,7 @@ function addBlacklistLink() {
         });
 
         headerInfo.appendChild(link);
-        linkAdded = true; // Set the flag.
+        linkAdded = true;
     }
 }
 
@@ -111,7 +106,7 @@ const observer = new MutationObserver(function(mutations) {
         addBlacklistLink();
     } else {
         headerInfo = null;
-        linkAdded = false; //reset the flag.
+        linkAdded = false;
         addBlacklistLink();
     }
 });
