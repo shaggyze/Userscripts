@@ -143,11 +143,14 @@
     infoDiv.style.zIndex = '9999';
     infoDiv.style.display = 'none';
     document.body.appendChild(infoDiv);
+
     if (followMouse === true) {
+      document.addEventListener('mousemove', function (event) {
       if (infoDiv.style.display === 'block') {
         infoDiv.style.top = event.clientY + window.scrollY + 10 + 'px';
         infoDiv.style.left = event.clientX + window.scrollX + (40 * largeFactor) + 20 + 'px';
       }
+      });
     }
   }
 
