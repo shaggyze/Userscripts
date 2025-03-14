@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.7.4
+// @version     1.7.5
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @include     *
@@ -25,12 +25,12 @@
 
   const largeFactor = 5.5; // multiplies largeImage size.
   const truncateSynopsis = 200; // synopsis character limit.
-  let showmoreImages = GM_getValue("showmoreImages", false); // shows more common/ui images not just anime/manga.
+  let showmoreImages = Boolean(GM_getValue("showmoreImages", false)); // shows more common/ui images not just anime/manga.
   let debug = false; // shows debug info in console F12, force showinfoDiv = true.
-  let showinfoDiv = GM_getValue("showinfoDiv", true); // if true will show anime/manga info from api.
-  let onlyMALsite = GM_getValue("onlyMALsite", true); // if true it only works on MAL's website.
+  let onlyMALsite = Boolean(GM_getValue("onlyMALsite", true)); // if true it only works on MAL's website.
+  let showinfoDiv = Boolean(GM_getValue("showinfoDiv", true)); // if true will show anime/manga info from api.
+  let followMouse = Boolean(GM_getValue("followMouse", false)); // if true largeImage and infoDiv follow mouse..
   let apiJSONUrl = false; // if false it's slower, but more accurate.
-  let followMouse = GM_getValue("followMouse", false); // if true largeImage and infoDiv follow mouse..
   const excludedUrls = /^(https?:\/\/)?myanimelist\.net\/(anime|manga)(?!\/(season|adapted|genre|.*\/userrecs|.*\/stacks|.*\/pics)(?:\/|$))(?:\/.*)?$/;
   let apiUrl = null;
   let largeImage = null;
@@ -40,6 +40,8 @@
   let type = null;
   let allData = null;
   let otherData = null;
+  const usernameMatch = location.pathname.match(/\/animelist\/([^\/]+)|\/mangalist\/([^\/]+)/);
+  const username = usernameMatch[1] || usernameMatch[2];
 
   GM_registerMenuCommand(`${onlyMALsite ? "Disable" : "Enable"} Only MAL Site`, function() { GM_setValue("onlyMALsite", !onlyMALsite); location.reload(); });
 
@@ -51,6 +53,50 @@
   GM_registerMenuCommand(`${showmoreImages ? "Disable" : "Enable"} Show More Images`, function() { GM_setValue("showmoreImages", !showmoreImages); location.reload(); });
   GM_registerMenuCommand(`${followMouse ? "Disable" : "Enable"} Follow Mouse`, function() { GM_setValue("followMouse", !followMouse); location.reload(); });
   GM_registerMenuCommand(`${showinfoDiv ? "Disable" : "Enable"} Show Info Div`, function() { GM_setValue("showinfoDiv", !showinfoDiv); location.reload(); });
+
+    function getBlacklist() {
+        return JSON.parse(GM_getValue("blacklist", "[]"));
+    }
+
+    function saveBlacklist(blacklist) {
+        GM_setValue("blacklist", JSON.stringify(blacklist));
+    }
+
+    function isBlacklisted(username) {
+        return getBlacklist().includes(username);
+    }
+
+    function toggleBlacklist(username) {
+        let blacklist = getBlacklist();
+        if (isBlacklisted(username)) {
+            blacklist = blacklist.filter(u => u !== username);
+        } else {
+            blacklist.push(username);
+        }
+        saveBlacklist(blacklist);
+    }
+
+    function addBlacklistLink() {
+        const headerInfo = document.querySelector(".btn-menu");
+        if (!headerInfo) return;
+
+        const link = document.createElement("a");
+        link.style.color = "black";
+        link.style.marginLeft = "10px";
+        link.textContent = isBlacklisted(username) ? "UnBlacklist Hover Image" : "Blacklist Hover Image";
+        link.href = "#";
+
+        link.addEventListener("click", function (event) {
+            event.preventDefault();
+            toggleBlacklist(username);
+            link.textContent = isBlacklisted(username) ? "UnBlacklist Hover Image" : "Blacklist Hover Image";
+            location.reload();
+        });
+
+        headerInfo.appendChild(link);
+    }
+
+    addBlacklistLink();
 
   function createlargeImage() {
     largeImage = document.createElement('img');
@@ -65,8 +111,9 @@
     largeImage.style.maxWidth = '75%';
     largeImage.style.maxHeight = '75%';
     largeImage.style.zIndex = '9999';
-    largeImage.style.display = 'none';
-    largeImage.src = imageUrl;
+    largeImage.style.border = '0';
+    largeImage.alt = '*';
+        largeImage.src = imageUrl;
     document.body.appendChild(largeImage);
 
     if (followMouse === true) {
@@ -74,10 +121,6 @@
       if (largeImage.style.display === 'block') {
         largeImage.style.top = event.clientY + window.scrollY + 10 + 'px';
         largeImage.style.left = event.clientX + window.scrollX + 10 + 'px';
-      if (infoDiv.style.display === 'block') {
-        infoDiv.style.top = event.clientY + window.scrollY + 10 + 'px';
-        infoDiv.style.left = event.clientX + window.scrollX + (40 * largeFactor) + 20 + 'px';
-      }
       }
       });
     }
@@ -99,6 +142,12 @@
     infoDiv.style.zIndex = '9999';
     infoDiv.style.display = 'none';
     document.body.appendChild(infoDiv);
+    if (followMouse === true) {
+      if (infoDiv.style.display === 'block') {
+        infoDiv.style.top = event.clientY + window.scrollY + 10 + 'px';
+        infoDiv.style.left = event.clientX + window.scrollX + (40 * largeFactor) + 20 + 'px';
+      }
+    }
   }
 
   function closePopup() {
@@ -179,7 +228,11 @@
                         <div><b>Published:</b> ${api.data.published.start || "Unknown"} to ${api.data.published.end || "Unknown"}</div>
                         `;
             }
-            if (imageUrl == 'https://shaggyze.website/images/anime/transparent.png') largeImage.src = `${api.data.cover}`;
+            if (isBlacklisted(username)) {
+              console.log(`User ${username} is blacklisted. Large image script disabled.`);
+            } else {
+              if (imageUrl == 'https://shaggyze.website/images/anime/transparent.png') largeImage.src = `${api.data.cover}`;
+            }
             largeImage.style.display = 'block';
             infoDiv.innerHTML = `${allData}<br><div><b>Type:</b> ${api.data.type || "Unknown"}</div>${otherData}<br>${synopsis}`;
             if (showinfoDiv) infoDiv.style.display = 'block';
@@ -248,9 +301,14 @@
   document.addEventListener('mouseover', function (event) {
     const target = event.target;
     closePopup();
-    if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'SPAN' || target.tagName === 'DIV' || target.tagName === 'B' || target.tagName === 'I' || target.tagName === 'STRONG') {
+    if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'SPAN' || target.tagName === 'TBODY' || target.tagName === 'DIV' || target.tagName === 'B' || target.tagName === 'I' || target.tagName === 'STRONG') {
       let imageElement = target.closest('IMG');
-      imageUrl = imageElement?.src || target?.getAttribute('data.src') || target?.getAttribute('data-bg');
+      if (isBlacklisted(username)) {
+        console.log(`User ${username} is blacklisted. Large image script disabled.`);
+      } else {
+
+        imageUrl = imageElement?.src || target?.getAttribute('data.src') || target?.getAttribute('data-bg');
+      }
       if (debug) console.log('1 ' + imageUrl);
       if (!imageUrl) imageUrl = 'https://shaggyze.website/images/anime/transparent.png';
       if (debug) console.log('2 ' + imageUrl);
@@ -269,7 +327,11 @@
         }
         largeImage.width = 40 * largeFactor;
         largeImage.height = 60 * largeFactor;
-        largeImage.src = imageUrl;
+        if (isBlacklisted(username)) {
+          console.log(`User ${username} is blacklisted. Large image script disabled.`);
+        } else {
+          largeImage.src = imageUrl;
+        }
         largeImage.style.display = 'block';
 
         if (!infoDiv) createinfoDiv();
@@ -304,7 +366,7 @@
           parseJson();
         }
       };
-      img.src = imageUrl;
+        img.src = imageUrl;
     }
   });
 
