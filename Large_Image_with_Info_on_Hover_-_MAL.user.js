@@ -36,8 +36,11 @@
   let username = null; let headerInfo = null; let linkAdded = false;
 
   if (debug) showinfoDiv = true;
-
   GM_registerMenuCommand(`${onlyMALsite ? "Disable" : "Enable"} Only MAL Site`, function() { GM_setValue("onlyMALsite", !onlyMALsite); location.reload(); });
+  if (onlyMALsite === true & !location.href.includes("myanimelist.net"))) {
+    console.log("Large image with info on Hover Script excluded on this page.");
+    return;
+  }
   GM_registerMenuCommand(`${showmoreImages ? "Disable" : "Enable"} Show More Images`, function() { GM_setValue("showmoreImages", !showmoreImages); location.reload(); });
   GM_registerMenuCommand(`${followMouse ? "Disable" : "Enable"} Follow Mouse`, function() { GM_setValue("followMouse", !followMouse); location.reload(); });
   GM_registerMenuCommand(`${showinfoDiv ? "Disable" : "Enable"} Show Info Div`, function() { GM_setValue("showinfoDiv", !showinfoDiv); location.reload(); });
