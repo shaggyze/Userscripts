@@ -37,7 +37,7 @@
 
   if (debug) showinfoDiv = true;
   GM_registerMenuCommand(`${onlyMALsite ? "Disable" : "Enable"} Only MAL Site`, function() { GM_setValue("onlyMALsite", !onlyMALsite); location.reload(); });
-  if (onlyMALsite === true & !location.href.includes("myanimelist.net"))) {
+  if (onlyMALsite === true & !location.href.includes("myanimelist.net")) {
     console.log("Large image with info on Hover Script excluded on this page.");
     return;
   }
