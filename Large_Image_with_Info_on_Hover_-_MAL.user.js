@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.7.7
+// @version     1.7.8
 // @description Large image with info on Hover.
 // @author      ShaggyZE
 // @include     *
@@ -25,32 +25,19 @@
 
   const largeFactor = 5.5; // multiplies largeImage size.
   const truncateSynopsis = 200; // synopsis character limit.
-  let showmoreImages = Boolean(GM_getValue("showmoreImages", false)); // shows more common/ui images not just anime/manga.
+  let apiJSONUrl = false; // if false it's slower, but more accurate.
   let debug = false; // shows debug info in console F12, force showinfoDiv = true.
   let onlyMALsite = Boolean(GM_getValue("onlyMALsite", true)); // if true it only works on MAL's website.
   let showinfoDiv = Boolean(GM_getValue("showinfoDiv", true)); // if true will show anime/manga info from api.
   let followMouse = Boolean(GM_getValue("followMouse", false)); // if true largeImage and infoDiv follow mouse..
-  let apiJSONUrl = false; // if false it's slower, but more accurate.
-  const excludedUrls = /^(https?:\/\/)?myanimelist\.net\/(anime|manga)(?!\/(season|adapted|genre|.*\/userrecs|.*\/stacks|.*\/pics)(?:\/|$))(?:\/.*)?$/;
-  let apiUrl = null;
-  let largeImage = null;
-  let infoDiv = null;
-  let imageUrl = null;
-  let id = null;
-  let type = null;
-  let allData = null;
-  let otherData = null;
-  let username = null;
-  let headerInfo = null;
-  let linkAdded = false;
+  let showmoreImages = Boolean(GM_getValue("showmoreImages", false)); // shows more common/ui images not just anime/manga.
+  let apiUrl = null; let largeImage = null; let infoDiv = null; let imageUrl = null;
+  let id = null; let type = null; let allData = null; let otherData = null;
+  let username = null; let headerInfo = null; let linkAdded = false;
+
+  if (debug) showinfoDiv = true;
 
   GM_registerMenuCommand(`${onlyMALsite ? "Disable" : "Enable"} Only MAL Site`, function() { GM_setValue("onlyMALsite", !onlyMALsite); location.reload(); });
-
-  if ((onlyMALsite === true & !location.href.includes("myanimelist.net")) || (excludedUrls.test(location.href))) {
-    console.log("Large image with info on Hover Script excluded on this page.");
-    return;
-  }
-  if (debug) showinfoDiv = true;
   GM_registerMenuCommand(`${showmoreImages ? "Disable" : "Enable"} Show More Images`, function() { GM_setValue("showmoreImages", !showmoreImages); location.reload(); });
   GM_registerMenuCommand(`${followMouse ? "Disable" : "Enable"} Follow Mouse`, function() { GM_setValue("followMouse", !followMouse); location.reload(); });
   GM_registerMenuCommand(`${showinfoDiv ? "Disable" : "Enable"} Show Info Div`, function() { GM_setValue("showinfoDiv", !showinfoDiv); location.reload(); });
@@ -78,12 +65,13 @@
     }
 
 function addBlacklistLink() {
-    if (!headerInfo) headerInfo = document.querySelector(".btn-menu");
+    if (!headerInfo) headerInfo = document.querySelector(".header");
     username = location.pathname.match(/\/animelist\/([^\/]+)|\/mangalist\/([^\/]+)/) ? (location.pathname.match(/\/animelist\/([^\/]+)|\/mangalist\/([^\/]+)/)[1] || location.pathname.match(/\/animelist\/([^\/]+)|\/mangalist\/([^\/]+)/)[2] || null) : null;
 
     if (headerInfo && username && !linkAdded) {
         const link = document.createElement("a");
-        link.style.color = "black";
+        link.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        link.style.color = 'white';
         link.style.marginLeft = "10px";
         link.textContent = isBlacklisted(username) ? "UnBlacklist Hover Image" : "Blacklist Hover Image";
         link.href = "#";
@@ -101,8 +89,8 @@ function addBlacklistLink() {
 }
 
 const observer = new MutationObserver(function(mutations) {
-    if (document.querySelector(".btn-menu")) {
-        headerInfo = document.querySelector(".btn-menu");
+    if (document.querySelector(".header-info")) {
+        headerInfo = document.querySelector(".header-info");
         addBlacklistLink();
     } else {
         headerInfo = null;
@@ -179,6 +167,11 @@ observer.observe(document.body, { childList: true, subtree: true });
   }
 
   function parseApi(id, type) {
+              const isOwnPage = location.pathname.includes(`/${type}/${id}`);
+            if (isOwnPage) {
+              if (debug) console.log(`Not fetching /${type}/${id} info on own page: ${location.href}`);
+              return;
+            }
     if (apiJSONUrl) {
       let subDirectory = Math.floor(id / 10000);
       apiUrl = `https://shaggyze.website/info/${type}/${subDirectory}/${id}.json`;
@@ -318,7 +311,7 @@ observer.observe(document.body, { childList: true, subtree: true });
   document.addEventListener('mouseover', function (event) {
     const target = event.target;
     closePopup();
-    if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'SPAN' || target.tagName === 'TD' || target.tagName === 'DIV' || target.tagName === 'B' || target.tagName === 'I' || target.tagName === 'STRONG') {
+    if (target.tagName === 'IMG' || target.tagName === 'A' || target.tagName === 'EM' || target.tagName === 'SPAN' || target.tagName === 'LI' || target.tagName === 'TD' || target.tagName === 'B' || target.tagName === 'I' || target.tagName === 'STRONG') {
       let imageElement = target.closest('IMG');
       if (isBlacklisted(username)) {
         console.log(`User ${username} is blacklisted. Large image script disabled.`);
@@ -367,16 +360,14 @@ observer.observe(document.body, { childList: true, subtree: true });
           id = match ? match[2] : null;
 
           if (id) {
-            parseApi(id, type);
-          }
-          else {
+              parseApi(id, type);
+          } else {
             if (debug) console.error(`Could not extract ID from href:`, href);
             if (debug) infoDiv.innerHTML = "Could not extract ID from URL.";
             if (debug & showinfoDiv) infoDiv.style.display = 'block';
             parseJson();
           }
-        }
-        else {
+        } else {
           if (debug) console.error(`Could not find parent anchor tag for image:`, target);
           if (debug) infoDiv.innerHTML = "Could not find link for this image.";
           if (debug & showinfoDiv) infoDiv.style.display = 'block';
