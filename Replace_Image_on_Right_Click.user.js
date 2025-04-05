@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Replace_Image_on_Right_Click.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Replace_Image_on_Right_Click.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     2.9
+// @version     3.0
 // @description Replace Image on Right Click.
 // @author      ShaggyZE
 // @include     *
@@ -40,11 +40,17 @@
             setOriginalSrc(img);
             const originalSrc = getOriginalSrc(img);
             if (replacedImages[originalSrc]) {
-                const newSrc = replacedImages[originalSrc];
-                img.src = newSrc;
-                if (img.dataset.src) {
-                    img.dataset.src = newSrc;
+                const replacementUrl = replacedImages[originalSrc];
+                if (img.hasAttribute('src')) {
+                    img.src = replacementUrl;
                 }
+                if (img.hasAttribute('srcset')) {
+                    img.srcset = replacementUrl;
+                }
+                if (img.dataset.hasOwnProperty('srcset')) {
+                    img.dataset.srcset = replacementUrl;
+                }
+
             }
         });
     }
