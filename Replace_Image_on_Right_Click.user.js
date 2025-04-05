@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Replace_Image_on_Right_Click.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Replace_Image_on_Right_Click.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.7
+// @version     2.9
 // @description Replace Image on Right Click.
 // @author      ShaggyZE
 // @include     *
@@ -18,43 +18,67 @@
 (function() {
     'use strict';
 
-    const replacedImages = GM_getValue('replacedImages', {});
+    const storageKey = 'replacedImages';
+    const replacedImages = GM_getValue(storageKey, {});
+
+    function isPlaceholderImage(imgSrc) {
+        return imgSrc.includes('spacer.gif') || imgSrc === '';
+    }
+
+    function getOriginalSrc(img) {
+        return img.dataset.originalSrc || (img.dataset.src && isPlaceholderImage(img.src)) ? img.dataset.src : img.src;
+    }
+
+    function setOriginalSrc(img) {
+        if (!img.dataset.originalSrc) {
+            img.dataset.originalSrc = getOriginalSrc(img);
+        }
+    }
 
     function applyStoredReplacements() {
         document.querySelectorAll('img').forEach(img => {
-            const originalSrc = img.dataset.originalSrc;
-            if (originalSrc && replacedImages[originalSrc]) {
-                img.src = replacedImages[originalSrc];
+            setOriginalSrc(img);
+            const originalSrc = getOriginalSrc(img);
+            if (replacedImages[originalSrc]) {
+                const newSrc = replacedImages[originalSrc];
+                img.src = newSrc;
+                if (img.dataset.src) {
+                    img.dataset.src = newSrc;
+                }
             }
         });
     }
 
-    // Store original src and apply replacements on window load
     window.addEventListener('load', () => {
-        document.querySelectorAll('img').forEach(img => {
-            img.dataset.originalSrc = img.src;
-        });
-        applyStoredReplacements();
+        setTimeout(applyStoredReplacements, 500);
     });
 
-    let currentTargetImage = null;
+    let isApplyingReplacements = false;
+    window.addEventListener('scroll', () => {
+        if (!isApplyingReplacements) {
+            isApplyingReplacements = true;
+            requestAnimationFrame(() => {
+                applyStoredReplacements();
+                isApplyingReplacements = false;
+            });
+        }
+    });
+
     let replaceButton = null;
     let rightClickPosition = null;
 
     document.addEventListener('mousedown', function(event) {
         if (event.button === 2 && event.target.tagName === 'IMG') {
-            currentTargetImage = event.target;
+            const targetImage = event.target;
             rightClickPosition = { x: event.clientX, y: event.clientY };
 
-            // Remove any existing button
             if (replaceButton && replaceButton.parentNode) {
                 replaceButton.parentNode.removeChild(replaceButton);
                 replaceButton = null;
             }
 
-            // Introduce a delay before showing the button
             setTimeout(function() {
-                if (currentTargetImage && rightClickPosition) {
+                if (targetImage && rightClickPosition) {
                     const x = rightClickPosition.x;
                     const y = rightClickPosition.y;
 
@@ -66,18 +90,18 @@
                     replaceButton.style.backgroundColor = '#eee';
                     replaceButton.style.border = '1px solid #ccc';
                     replaceButton.style.padding = '8px 12px';
-                    replaceButton.style.zIndex = '10001'; // Ensure it's on top
+                    replaceButton.style.zIndex = '10001';
                     replaceButton.style.boxShadow = '1px 1px 3px rgba(0,0,0,0.1)';
                     replaceButton.style.cursor = 'pointer';
                     replaceButton.style.fontSize = '14px';
 
                     const handleReplaceClick = function() {
-                        const originalImageUrl = currentTargetImage.dataset.originalSrc;
+                        const originalImageUrl = getOriginalSrc(targetImage);
                         const newImageUrl = prompt('Enter the new image URL:');
                         if (newImageUrl) {
-                            currentTargetImage.src = newImageUrl;
+                            targetImage.src = newImageUrl;
                             replacedImages[originalImageUrl] = newImageUrl;
-                            GM_setValue('replacedImages', replacedImages);
+                            GM_setValue(storageKey, replacedImages);
                         }
                         removeButton();
                     };
@@ -90,7 +114,6 @@
                         if (replaceButton && replaceButton.parentNode) {
                             replaceButton.parentNode.removeChild(replaceButton);
                             replaceButton = null;
-                            currentTargetImage = null;
                             rightClickPosition = null;
                             document.removeEventListener('mousedown', handleOutsideClick);
                             document.removeEventListener('mouseup', handleOutsideRightClick);
@@ -105,7 +128,7 @@
                     }
 
                     function handleOutsideRightClick(e) {
-                        if (replaceButton && e.button === 2 && e.target !== currentTargetImage) {
+                        if (replaceButton && e.button === 2 && e.target !== targetImage) {
                             removeButton();
                         }
                     }
@@ -122,8 +145,7 @@
                         document.addEventListener('keydown', handleEscape);
                     }, 50);
                 }
-            }, 300); // Delay
-
+            }, 300);
         }
     }, false);
 })();
