@@ -4,7 +4,7 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Replace_Image_on_Right_Click.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Replace_Image_on_Right_Click.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.3
+// @version     1.7
 // @description Replace Image on Right Click.
 // @author      ShaggyZE
 // @include     *
@@ -22,13 +22,20 @@
 
     function applyStoredReplacements() {
         document.querySelectorAll('img').forEach(img => {
-            if (replacedImages[img.src]) {
-                img.src = replacedImages[img.src];
+            const originalSrc = img.dataset.originalSrc;
+            if (originalSrc && replacedImages[originalSrc]) {
+                img.src = replacedImages[originalSrc];
             }
         });
     }
 
-    window.addEventListener('load', applyStoredReplacements);
+    // Store original src and apply replacements on window load
+    window.addEventListener('load', () => {
+        document.querySelectorAll('img').forEach(img => {
+            img.dataset.originalSrc = img.src;
+        });
+        applyStoredReplacements();
+    });
 
     let currentTargetImage = null;
     let replaceButton = null;
@@ -39,11 +46,13 @@
             currentTargetImage = event.target;
             rightClickPosition = { x: event.clientX, y: event.clientY };
 
+            // Remove any existing button
             if (replaceButton && replaceButton.parentNode) {
                 replaceButton.parentNode.removeChild(replaceButton);
                 replaceButton = null;
             }
 
+            // Introduce a delay before showing the button
             setTimeout(function() {
                 if (currentTargetImage && rightClickPosition) {
                     const x = rightClickPosition.x;
@@ -63,9 +72,9 @@
                     replaceButton.style.fontSize = '14px';
 
                     const handleReplaceClick = function() {
+                        const originalImageUrl = currentTargetImage.dataset.originalSrc;
                         const newImageUrl = prompt('Enter the new image URL:');
                         if (newImageUrl) {
-                            const originalImageUrl = currentTargetImage.src;
                             currentTargetImage.src = newImageUrl;
                             replacedImages[originalImageUrl] = newImageUrl;
                             GM_setValue('replacedImages', replacedImages);
@@ -113,7 +122,7 @@
                         document.addEventListener('keydown', handleEscape);
                     }, 50);
                 }
-            }, 300);
+            }, 300); // Delay
 
         }
     }, false);
