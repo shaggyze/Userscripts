@@ -4,10 +4,10 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Large_Image_with_Info_on_Hover_-_MAL.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     1.7.8
+// @version     1.8.0
 // @description Large image with info on Hover.
 // @author      ShaggyZE
-// @include     *
+// @include     *://*/*
 // @icon        https://shaggyze.website/MAL.png
 // @run-at      document-idle
 // @grant       GM_registerMenuCommand

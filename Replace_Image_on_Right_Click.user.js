@@ -4,10 +4,10 @@
 // @updateURL   https://openuserjs.org/meta/shaggyze/Replace_Image_on_Right_Click.meta.js
 // @downloadURL https://openuserjs.org/install/shaggyze/Replace_Image_on_Right_Click.user.js
 // @copyright   2025, shaggyze (https://openuserjs.org/users/shaggyze)
-// @version     3.0
+// @version     3.1
 // @description Replace Image on Right Click.
 // @author      ShaggyZE
-// @include     *
+// @include     *://*/*
 // @icon        https://shaggyze.website/movies/website.png
 // @run-at      document-begin
 // @grant       GM_getValue
